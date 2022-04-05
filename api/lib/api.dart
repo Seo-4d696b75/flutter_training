@@ -3,6 +3,18 @@
 /// More dartdocs go here.
 library api;
 
-export 'src/api_base.dart';
+import 'dart:math';
 
-// TODO: Export any libraries intended for clients of this package.
+enum _Weather { Sunny, Cloudy, Rainy }
+
+extension on _Weather {
+  String get name => toString().split(".").last;
+}
+
+class YumemiWeather {
+  final _random = Random();
+
+  String fetchSimpleWeather() {
+    return _Weather.values[_random.nextInt(_Weather.values.length)].name;
+  }
+}
