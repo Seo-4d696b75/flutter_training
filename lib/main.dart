@@ -39,12 +39,64 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: const Center(
-        child: Text("Hello World!"),
-      ),
-    );
+        appBar: AppBar(
+          title: Text(title),
+        ),
+        body: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          const Spacer(flex: 1),
+          Expanded(
+              flex: 2,
+              child: Column(children: [
+                const Spacer(flex: 1),
+                Column(children: [
+                  const AspectRatio(
+                      aspectRatio: 1.0,
+                      child: Image(
+                          image: NetworkImage("https://storage.googleapis"
+                              ".com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png"))),
+                  Row(children: const [
+                    Expanded(
+                      flex: 1,
+                      child: Text("text", textAlign: TextAlign.center),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Text("text", textAlign: TextAlign.center),
+                    )
+                  ])
+                ]),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(height: 80),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Center(
+                                child: ElevatedButton(
+                                  onPressed: () => {},
+                                  child: const Text("button"),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Center(
+                                child: ElevatedButton(
+                                  onPressed: () => {},
+                                  child: const Text("button"),
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      ]),
+                )
+              ])),
+          const Spacer(flex: 1),
+        ]));
   }
 }
