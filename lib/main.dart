@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hello_flutter/strings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,12 +12,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'droidtraining',
+      title: Strings.appName,
       theme: ThemeData(
         // このアプリのテーマ（アプリ全般に適用させる統一的なUIデザインの設定情報）.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'droidtraining'),
+      home: const MyHomePage(title: Strings.appName),
     );
   }
 }
