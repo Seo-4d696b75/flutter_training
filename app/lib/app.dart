@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'strings.dart';
 
@@ -46,11 +47,12 @@ class MyHomePage extends StatelessWidget {
               child: Column(children: [
                 const Spacer(flex: 1),
                 Column(children: [
-                  const AspectRatio(
+                  AspectRatio(
                       aspectRatio: 1.0,
-                      child: Image(
-                          image: NetworkImage("https://storage.googleapis"
-                              ".com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png"))),
+                      child: SvgPicture.asset(
+                        "lib/assets/sunny.svg",
+                        color: Colors.red,
+                      )),
                   Row(children: const [
                     Expanded(
                       flex: 1,
