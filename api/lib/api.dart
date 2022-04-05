@@ -8,7 +8,7 @@ import 'dart:math';
 enum _Weather { Sunny, Cloudy, Rainy }
 
 extension on _Weather {
-  String get name => toString().split(".").last;
+  String get name => toString().split(".").last.toLowerCase();
 }
 
 class YumemiWeather {
