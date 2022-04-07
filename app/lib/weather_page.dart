@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:api/api.dart';
+import 'package:api/model/request.dart';
+import 'package:api/model/response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,6 +11,8 @@ import 'package:hello_flutter/error_dialog.dart';
 import 'package:hello_flutter/weather.dart';
 
 final weatherProvider = StateProvider<Weather?>((ref) => null);
+final maxTempProvider = StateProvider<int?>((_) => null);
+final minTempProvider = StateProvider<int?>((_) => null);
 
 class WeatherPage extends ConsumerStatefulWidget {
   const WeatherPage({Key? key, required this.title}) : super(key: key);
@@ -22,8 +28,15 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
 
   void _fetchWeather() async {
     try {
-      final value = parseWeather(_api.fetchThrowWeather());
-      ref.read(weatherProvider.notifier).state = value;
+      var request = Request(
+        date: DateTime.now(),
+        area: "tokyo",
+      );
+      var str = _api.fetchJsonWeather(json.encode(request.toJson()));
+      var response = Response.fromJson(json.decode(str));
+      ref.read(weatherProvider.notifier).state = parseWeather(response.weather);
+      ref.read(minTempProvider.notifier).state = response.minTemp;
+      ref.read(maxTempProvider.notifier).state = response.maxTemp;
     } on UnknownException {
       var result = await showDialog<ErrorDialogResult?>(
         context: context,
@@ -38,6 +51,8 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
   @override
   Widget build(BuildContext context) {
     final weather = ref.watch(weatherProvider);
+    final minTemp = ref.watch(minTempProvider);
+    final maxTemp = ref.watch(maxTempProvider);
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -51,15 +66,19 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                 Column(children: [
                   AspectRatio(
                       aspectRatio: 1.0, child: _getWeatherImage(weather)),
-                  Row(children: const [
+                  Row(children: [
                     Expanded(
                       flex: 1,
-                      child: Text("text", textAlign: TextAlign.center),
+                      child: Text(minTemp != null ? "$minTemp℃" : "",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.blue)),
                     ),
                     Expanded(
                       flex: 1,
-                      child: Text("text", textAlign: TextAlign.center),
-                    )
+                      child: Text(maxTemp != null ? "$maxTemp℃" : "",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.red)),
+                    ),
                   ])
                 ]),
                 Expanded(
@@ -93,9 +112,9 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                               ),
                             )
                           ],
-                        )
+                        ),
                       ]),
-                )
+                ),
               ])),
           const Spacer(flex: 1),
         ]));
