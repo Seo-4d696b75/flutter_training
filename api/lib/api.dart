@@ -17,4 +17,25 @@ class YumemiWeather {
   String fetchSimpleWeather() {
     return _Weather.values[_random.nextInt(_Weather.values.length)].name;
   }
+
+  String fetchThrowWeather() {
+    final size = _Weather.values.length;
+    final idx = _random.nextInt(size + 1);
+    if (idx == size) {
+      throw UnknownException("fail to fetch weather");
+    } else {
+      return _Weather.values[idx].name;
+    }
+  }
+}
+
+class UnknownException implements Exception {
+  UnknownException(this.message);
+
+  final dynamic message;
+
+  @override
+  String toString() {
+    return "UnknownException{$message}";
+  }
 }
