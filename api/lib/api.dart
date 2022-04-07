@@ -3,7 +3,11 @@
 /// More dartdocs go here.
 library api;
 
+import 'dart:convert';
 import 'dart:math';
+
+import 'package:api/model/request.dart';
+import 'package:api/model/response.dart';
 
 enum _Weather { Sunny, Cloudy, Rainy }
 
@@ -26,6 +30,19 @@ class YumemiWeather {
     } else {
       return _Weather.values[idx].name;
     }
+  }
+
+  String fetchJsonWeather(String jsonStr) {
+    var request = Request.fromJson(json.decode(jsonStr));
+    var maxTemp = _random.nextInt(30) + 10;
+    var minTemp = _random.nextInt(maxTemp + 40) - 40;
+    var res = Response(
+      weather: fetchThrowWeather(),
+      maxTemp: maxTemp,
+      minTemp: minTemp,
+      date: request.date,
+    );
+    return json.encode(res.toJson());
   }
 }
 
