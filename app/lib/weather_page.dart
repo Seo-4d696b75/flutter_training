@@ -1,6 +1,7 @@
 import 'package:api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hello_flutter/empty_page.dart';
 import 'package:hello_flutter/weather.dart';
 
 class WeatherPage extends StatefulWidget {
@@ -66,11 +67,15 @@ class _WeatherPageState extends State<WeatherPage> {
                                 ),
                               ),
                             ),
-                            const Expanded(
+                            Expanded(
                               flex: 1,
                               child: Center(
                                 child: ElevatedButton(
-                                  onPressed: null,
+                                  onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (ctx) =>
+                                              EmptyPage(title: widget.title))),
                                   child: const Text("next"),
                                 ),
                               ),
