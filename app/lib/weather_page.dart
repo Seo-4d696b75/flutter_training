@@ -2,6 +2,7 @@ import 'package:api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hello_flutter/empty_page.dart';
+import 'package:hello_flutter/error_dialog.dart';
 import 'package:hello_flutter/weather.dart';
 
 class WeatherPage extends StatefulWidget {
@@ -17,11 +18,19 @@ class _WeatherPageState extends State<WeatherPage> {
   Weather? _weather;
   final _api = YumemiWeather();
 
-  void _fetchWeather() {
-    setState(() {
-      final value = parseWeather(_api.fetchSimpleWeather());
-      _weather = value;
-    });
+  void _fetchWeather() async {
+    try {
+      final value = parseWeather(_api.fetchThrowWeather());
+      setState(() => _weather = value);
+    } on UnknownException {
+      var result = await showDialog<ErrorDialogResult?>(
+        context: context,
+        builder: (_) => const ErrorDialog(),
+      );
+      if (result == ErrorDialogResult.reload) {
+        _fetchWeather();
+      }
+    }
   }
 
   @override
