@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hello_flutter/weather_page.dart';
+import 'package:hello_flutter/ui/weather_page.dart';
 
-import 'strings.dart';
+import 'data/strings.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
