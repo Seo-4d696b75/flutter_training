@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hello_flutter/data/weather.dart';
 import 'package:hello_flutter/ui/empty_page.dart';
 import 'package:hello_flutter/ui/error_dialog.dart';
+import 'package:hello_flutter/ui/event.dart';
 import 'package:hello_flutter/ui/weather_viewmodel.dart';
 
 class WeatherPage extends ConsumerStatefulWidget {
@@ -19,23 +20,18 @@ class WeatherPage extends ConsumerStatefulWidget {
 }
 
 class _WeatherPageState extends ConsumerState<WeatherPage> {
-  void _reload() async {
-    final viewModel = ref.read(weatherViewModelProvider);
-    try {
-      viewModel.updateWeather();
-    } on UnknownException {
+  @override
+  Widget build(BuildContext context) {
+    ref.listenEvent<UnknownException>(
+        weatherViewModelProvider.select((value) => value.error), (error) async {
       var result = await showDialog<ErrorDialogResult?>(
         context: context,
         builder: (_) => const ErrorDialog(),
       );
       if (result == ErrorDialogResult.reload) {
-        _reload();
+        ref.read(weatherViewModelProvider).reload();
       }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    });
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -82,7 +78,8 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                               flex: 1,
                               child: Center(
                                 child: ElevatedButton(
-                                  onPressed: _reload,
+                                  onPressed:
+                                      ref.read(weatherViewModelProvider).reload,
                                   child: const Text("reload"),
                                 ),
                               ),
@@ -128,8 +125,12 @@ Widget _getWeatherImage(Weather? value) {
         color: Colors.blueAccent,
       );
     default:
-      return const Image(
-          image: NetworkImage("https://storage.googleapis"
-              ".com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png"));
+      return const FittedBox(
+        fit: BoxFit.fitWidth,
+        child: Icon(
+          Icons.image_not_supported_outlined,
+          color: Colors.blueGrey,
+        ),
+      );
   }
 }
