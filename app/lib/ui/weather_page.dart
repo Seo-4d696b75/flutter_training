@@ -1,18 +1,11 @@
-import 'dart:convert';
-
 import 'package:api/api.dart';
-import 'package:api/model/request.dart';
-import 'package:api/model/response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:hello_flutter/empty_page.dart';
-import 'package:hello_flutter/error_dialog.dart';
-import 'package:hello_flutter/weather.dart';
-
-final weatherProvider = StateProvider<Weather?>((ref) => null);
-final maxTempProvider = StateProvider<int?>((_) => null);
-final minTempProvider = StateProvider<int?>((_) => null);
+import 'package:hello_flutter/data/weather.dart';
+import 'package:hello_flutter/ui/empty_page.dart';
+import 'package:hello_flutter/ui/error_dialog.dart';
+import 'package:hello_flutter/ui/weather_viewmodel.dart';
 
 class WeatherPage extends ConsumerStatefulWidget {
   const WeatherPage({Key? key, required this.title}) : super(key: key);
@@ -20,39 +13,29 @@ class WeatherPage extends ConsumerStatefulWidget {
   final String title;
 
   @override
-  ConsumerState<WeatherPage> createState() => _WeatherPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _WeatherPageState();
+  }
 }
 
 class _WeatherPageState extends ConsumerState<WeatherPage> {
-  final _api = YumemiWeather();
-
-  void _fetchWeather() async {
+  void _reload() async {
+    final viewModel = ref.read(weatherViewModelProvider);
     try {
-      var request = Request(
-        date: DateTime.now(),
-        area: "tokyo",
-      );
-      var str = _api.fetchJsonWeather(json.encode(request.toJson()));
-      var response = Response.fromJson(json.decode(str));
-      ref.read(weatherProvider.notifier).state = parseWeather(response.weather);
-      ref.read(minTempProvider.notifier).state = response.minTemp;
-      ref.read(maxTempProvider.notifier).state = response.maxTemp;
+      viewModel.updateWeather();
     } on UnknownException {
       var result = await showDialog<ErrorDialogResult?>(
         context: context,
         builder: (_) => const ErrorDialog(),
       );
       if (result == ErrorDialogResult.reload) {
-        _fetchWeather();
+        _reload();
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final weather = ref.watch(weatherProvider);
-    final minTemp = ref.watch(minTempProvider);
-    final maxTemp = ref.watch(maxTempProvider);
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -63,24 +46,30 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
               flex: 2,
               child: Column(children: [
                 const Spacer(flex: 1),
-                Column(children: [
-                  AspectRatio(
-                      aspectRatio: 1.0, child: _getWeatherImage(weather)),
-                  Row(children: [
-                    Expanded(
-                      flex: 1,
-                      child: Text(minTemp != null ? "$minTemp℃" : "",
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.blue)),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Text(maxTemp != null ? "$maxTemp℃" : "",
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.red)),
-                    ),
-                  ])
-                ]),
+                Consumer(builder: (ctx, ref, _) {
+                  final viewModel = ref.watch(weatherViewModelProvider);
+                  var minTemp = viewModel.minTemp;
+                  var maxTemp = viewModel.maxTemp;
+                  return Column(children: [
+                    AspectRatio(
+                        aspectRatio: 1.0,
+                        child: _getWeatherImage(viewModel.weather)),
+                    Row(children: [
+                      Expanded(
+                        flex: 1,
+                        child: Text(minTemp != null ? "$minTemp℃" : "",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.blue)),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Text(maxTemp != null ? "$maxTemp℃" : "",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.red)),
+                      ),
+                    ]),
+                  ]);
+                }),
                 Expanded(
                   flex: 1,
                   child: Column(
@@ -93,7 +82,7 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                               flex: 1,
                               child: Center(
                                 child: ElevatedButton(
-                                  onPressed: _fetchWeather,
+                                  onPressed: _reload,
                                   child: const Text("reload"),
                                 ),
                               ),
@@ -123,17 +112,17 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
 
 Widget _getWeatherImage(Weather? value) {
   switch (value) {
-    case Weather.Sunny:
+    case Weather.sunny:
       return SvgPicture.asset(
         "lib/assets/sunny.svg",
         color: Colors.red,
       );
-    case Weather.Cloudy:
+    case Weather.cloudy:
       return SvgPicture.asset(
         "lib/assets/cloudy.svg",
         color: Colors.grey,
       );
-    case Weather.Rainy:
+    case Weather.rainy:
       return SvgPicture.asset(
         "lib/assets/rainy.svg",
         color: Colors.blueAccent,
