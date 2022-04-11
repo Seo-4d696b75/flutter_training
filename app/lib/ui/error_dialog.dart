@@ -12,10 +12,12 @@ class ErrorDialog extends StatelessWidget {
       actions: [
         TextButton(
           child: const Text(Strings.errorDialogNegative),
+          key: const Key("error_dialog_button_negative"),
           onPressed: () => Navigator.pop(context, ErrorDialogResult.close),
         ),
         TextButton(
           child: const Text(Strings.errorDialogPositive),
+          key: const Key("error_dialog_button_positive"),
           onPressed: () => Navigator.pop(context, ErrorDialogResult.reload),
         )
       ],

@@ -60,12 +60,14 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                         flex: 1,
                         child: Text(minTemp != null ? "$minTemp℃" : "",
                             textAlign: TextAlign.center,
+                            key: const Key("weather_page_text_min_temp"),
                             style: const TextStyle(color: Colors.blue)),
                       ),
                       Expanded(
                         flex: 1,
                         child: Text(maxTemp != null ? "$maxTemp℃" : "",
                             textAlign: TextAlign.center,
+                            key: const Key("weather_page_text_max_temp"),
                             style: const TextStyle(color: Colors.red)),
                       ),
                     ]),
@@ -86,6 +88,7 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                                   onPressed:
                                       ref.read(weatherViewModelProvider).reload,
                                   child: const Text("reload"),
+                                  key: const Key("weather_page_button_reload"),
                                 ),
                               ),
                             ),
