@@ -24,6 +24,7 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
   Widget build(BuildContext context) {
     ref.listenEvent<UnknownException>(
         weatherViewModelProvider.select((value) => value.error), (error) async {
+      debugPrint("error callback: $error");
       var result = await showDialog<ErrorDialogResult?>(
         context: context,
         builder: (_) => const ErrorDialog(),
@@ -32,6 +33,7 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
         ref.read(weatherViewModelProvider).reload();
       }
     });
+    debugPrint("WeatherPage build");
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -43,13 +45,16 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
               child: Column(children: [
                 const Spacer(flex: 1),
                 Consumer(builder: (ctx, ref, _) {
-                  final viewModel = ref.watch(weatherViewModelProvider);
-                  var minTemp = viewModel.minTemp;
-                  var maxTemp = viewModel.maxTemp;
+                  debugPrint("render: weather, temperature");
+                  var weather = ref.watch(weatherViewModelProvider
+                      .select((value) => value.weather));
+                  var minTemp = ref.watch(weatherViewModelProvider
+                      .select((value) => value.minTemp));
+                  var maxTemp = ref.watch(weatherViewModelProvider
+                      .select((value) => value.maxTemp));
                   return Column(children: [
                     AspectRatio(
-                        aspectRatio: 1.0,
-                        child: _getWeatherImage(viewModel.weather)),
+                        aspectRatio: 1.0, child: _getWeatherImage(weather)),
                     Row(children: [
                       Expanded(
                         flex: 1,
