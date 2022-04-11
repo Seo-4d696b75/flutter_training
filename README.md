@@ -1,16 +1,16 @@
 # hello_flutter
 
-A new Flutter project.
+Flutter勉強のためのリポジトリ  
+Android+Kotlinで実装されたインターン・アルバイト研修用課題[droid-training](https://github.com/yumemi/droid-training)
+を移植しながら学習を進める
 
-## Getting Started
+## task
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+[x] layoutの作成  
+[x] 天気の表示とページの遷移  
+[x] エラーハンドリングとdialog表示  
+[x] JSONデータの扱い(freezed)  
+[x] MVVMの導入(riverpod)  
+[x] テストの追加  
+[ ] リソースデータの扱い(localizations,gen)  
+[ ] 非同期処理  
