@@ -5,9 +5,7 @@ abstract class Event<T> {
 
   bool get hasValue;
 
-  bool get hasHandled;
-
-  void handleOnce(void Function(T value) handler);
+  void handle(void Function(T value) handler);
 
   factory Event.none() {
     return _NotInitEvent();
@@ -20,12 +18,9 @@ abstract class Event<T> {
 
 class _NotInitEvent<T> implements Event<T> {
   @override
-  void handleOnce(void Function(T value) handler) {
+  void handle(void Function(T value) handler) {
     // nothing to do
   }
-
-  @override
-  bool get hasHandled => false;
 
   @override
   bool get hasValue => false;
@@ -38,20 +33,13 @@ class _Event<T> implements Event<T> {
   _Event(T value) : _value = value;
 
   final T _value;
-  bool _hasHandled = false;
 
   @override
   T get peek => _value;
 
   @override
-  bool get hasHandled => _hasHandled;
-
-  @override
-  void handleOnce(void Function(T value) handler) {
-    if (!_hasHandled) {
-      _hasHandled = true;
-      handler(_value);
-    }
+  void handle(void Function(T value) handler) {
+    handler(_value);
   }
 
   @override
@@ -59,12 +47,21 @@ class _Event<T> implements Event<T> {
 }
 
 extension EventListening on WidgetRef {
+  /// Eventが更新される度にコールバックされる
+  ///
+  /// - 有効な値を持つEvent型[Event#create]の場合のみコールバックする
+  /// - Event<T>がラップするT型のオブジェクトが等価(==)でもEventオブジェクトが別なら再度コールバックされる
   void listenEvent<T>(
     ProviderListenable<Event<T>> provider,
-    void Function(T value) listener,
-  ) {
-    listen<Event<T>>(provider, (_, current) {
-      current.handleOnce(listener);
-    });
+    void Function(T value) listener, {
+    void Function(Object value, StackTrace trace)? onError,
+  }) {
+    listen<Event<T>>(
+      provider,
+      (_, current) {
+        current.handle(listener);
+      },
+      onError: onError,
+    );
   }
 }
