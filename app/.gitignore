@@ -27,3 +27,6 @@
 .dart_tool/
 .packages
 build/
+
+# auto generated files by mockito for test
+/test/**/*.mocks.dart
