@@ -8,11 +8,11 @@ class DateTimeConverter implements JsonConverter<DateTime, String> {
 
   @override
   DateTime fromJson(String json) {
-    return DateFormat(_format).parseUTC(json).toLocal();
+    return DateFormat(_format).parse(json);
   }
 
   @override
   String toJson(DateTime object) {
-    return DateFormat(_format).format(object.toUtc());
+    return DateFormat(_format).format(object);
   }
 }
