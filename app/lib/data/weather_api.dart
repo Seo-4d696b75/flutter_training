@@ -6,5 +6,5 @@ abstract class WeatherAPI {
   /// 新しい天気予報を取得する
   ///
   /// Throws [UnknownException] if any runtime error from api.
-  WeatherForecast fetch(Request request);
+  Future<WeatherForecast> fetch(Request request);
 }

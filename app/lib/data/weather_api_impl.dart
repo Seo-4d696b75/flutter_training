@@ -10,8 +10,8 @@ class WeatherAPIImpl implements WeatherAPI {
   final _api = YumemiWeather();
 
   @override
-  WeatherForecast fetch(Request request) {
-    var str = _api.fetchJsonWeather(json.encode(request.toJson()));
+  Future<WeatherForecast> fetch(Request request) async {
+    var str = await _api.fetchBlockingWeather(json.encode(request.toJson()));
     return WeatherForecast.fromJson(json.decode(str));
   }
 }

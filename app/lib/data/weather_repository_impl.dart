@@ -12,12 +12,12 @@ class WeatherRepositoryImpl implements WeatherRepository {
   WeatherForecast? _weather;
 
   @override
-  void updateWeather() {
+  Future<void> updateWeather() async {
     var request = Request(
       date: DateTime.now(),
       area: "tokyo",
     );
-    var response = _api.fetch(request);
+    var response = await _api.fetch(request);
     _weather = response;
   }
 
