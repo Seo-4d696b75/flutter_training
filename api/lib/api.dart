@@ -44,6 +44,11 @@ class YumemiWeather {
     );
     return json.encode(res.toJson());
   }
+
+  Future<String> fetchBlockingWeather(String jsonStr) async {
+    await Future.delayed(Duration(seconds: 3));
+    return fetchJsonWeather(jsonStr);
+  }
 }
 
 class UnknownException implements Exception {
