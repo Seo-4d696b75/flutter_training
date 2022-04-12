@@ -38,78 +38,96 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
         appBar: AppBar(
           title: Text(l10n.appName),
         ),
-        body: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const Spacer(flex: 1),
-          Expanded(
-              flex: 2,
-              child: Column(children: [
-                const Spacer(flex: 1),
-                Consumer(builder: (ctx, ref, _) {
-                  debugPrint("render: weather, temperature");
-                  var weather = ref.watch(weatherViewModelProvider
-                      .select((value) => value.weather));
-                  final minTemp = weather?.minTemp;
-                  final maxTemp = weather?.maxTemp;
-                  return Column(children: [
-                    AspectRatio(
-                        aspectRatio: 1.0,
-                        child: _getWeatherImage(weather?.weather)),
-                    Row(children: [
-                      Expanded(
-                        flex: 1,
-                        child: Text(minTemp != null ? "$minTemp℃" : "",
-                            textAlign: TextAlign.center,
-                            key: const Key("weather_page_text_min_temp"),
-                            style: const TextStyle(color: Colors.blue)),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Text(maxTemp != null ? "$maxTemp℃" : "",
-                            textAlign: TextAlign.center,
-                            key: const Key("weather_page_text_max_temp"),
-                            style: const TextStyle(color: Colors.red)),
-                      ),
-                    ]),
-                  ]);
-                }),
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(height: 80),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: Center(
-                                child: ElevatedButton(
-                                  onPressed:
-                                      ref.read(weatherViewModelProvider).reload,
-                                  child: Text(l10n.buttonReload),
-                                  key: const Key("weather_page_button_reload"),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Center(
-                                child: ElevatedButton(
-                                  onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (ctx) =>
-                                              EmptyPage(title: l10n.appName))),
-                                  child: Text(l10n.buttonNext),
-                                ),
-                              ),
-                            )
-                          ],
+        body: Stack(children: [
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            const Spacer(flex: 1),
+            Expanded(
+                flex: 2,
+                child: Column(children: [
+                  const Spacer(flex: 1),
+                  Consumer(builder: (ctx, ref, _) {
+                    debugPrint("render: weather, temperature");
+                    var weather = ref.watch(weatherViewModelProvider
+                        .select((value) => value.weather));
+                    final minTemp = weather?.minTemp;
+                    final maxTemp = weather?.maxTemp;
+                    return Column(children: [
+                      AspectRatio(
+                          aspectRatio: 1.0,
+                          child: _getWeatherImage(weather?.weather)),
+                      Row(children: [
+                        Expanded(
+                          flex: 1,
+                          child: Text(minTemp != null ? "$minTemp℃" : "",
+                              textAlign: TextAlign.center,
+                              key: const Key("weather_page_text_min_temp"),
+                              style: const TextStyle(color: Colors.blue)),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Text(maxTemp != null ? "$maxTemp℃" : "",
+                              textAlign: TextAlign.center,
+                              key: const Key("weather_page_text_max_temp"),
+                              style: const TextStyle(color: Colors.red)),
                         ),
                       ]),
+                    ]);
+                  }),
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(height: 80),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Center(
+                                  child: ElevatedButton(
+                                    onPressed: ref
+                                        .read(weatherViewModelProvider)
+                                        .reload,
+                                    child: Text(l10n.buttonReload),
+                                    key:
+                                        const Key("weather_page_button_reload"),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Center(
+                                  child: ElevatedButton(
+                                    onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (ctx) => EmptyPage(
+                                                title: l10n.appName))),
+                                    child: Text(l10n.buttonNext),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ]),
+                  ),
+                ])),
+            const Spacer(flex: 1),
+          ]),
+          Consumer(builder: (ctx, ref, _) {
+            final isLoading = ref.watch(
+                weatherViewModelProvider.select((value) => value.loading));
+            debugPrint("render: progress");
+            return Visibility(
+              visible: isLoading,
+              child: Container(
+                child: const Center(
+                  child: CircularProgressIndicator(),
                 ),
-              ])),
-          const Spacer(flex: 1),
+                color: Colors.black.withOpacity(0.6),
+              ),
+            );
+          }),
         ]));
   }
 }

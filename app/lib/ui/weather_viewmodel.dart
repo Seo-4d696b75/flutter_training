@@ -12,22 +12,25 @@ class WeatherViewModel extends ChangeNotifier {
 
   final WeatherRepository _repository;
   Event<UnknownException> _reloadError = Event.none();
+  bool _loading = false;
 
   WeatherForecast? get weather => _repository.weather;
 
-  int? get minTemp => _repository.minTemp;
-
-  int? get maxTemp => _repository.maxTemp;
+  bool get loading => _loading;
 
   Event<UnknownException> get error => _reloadError;
 
-  void reload() {
+  void reload() async {
+    _loading = true;
+    notifyListeners();
     try {
-      _repository.updateWeather();
+      await _repository.updateWeather();
     } on UnknownException catch (e) {
       _reloadError = Event.create(e);
+    } finally {
+      _loading = false;
+      notifyListeners();
     }
-    notifyListeners();
   }
 }
 
