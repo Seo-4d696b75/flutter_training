@@ -3,15 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hello_flutter/data/weather.dart';
+import 'package:hello_flutter/l10n/l10n.dart';
 import 'package:hello_flutter/ui/empty_page.dart';
 import 'package:hello_flutter/ui/error_dialog.dart';
 import 'package:hello_flutter/ui/event.dart';
 import 'package:hello_flutter/ui/weather_viewmodel.dart';
 
 class WeatherPage extends ConsumerStatefulWidget {
-  const WeatherPage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const WeatherPage({Key? key}) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -34,9 +33,10 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
       }
     });
     debugPrint("WeatherPage build");
+    final l10n = L10n.of(context)!;
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text(l10n.appName),
         ),
         body: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           const Spacer(flex: 1),
@@ -87,7 +87,7 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                                 child: ElevatedButton(
                                   onPressed:
                                       ref.read(weatherViewModelProvider).reload,
-                                  child: const Text("reload"),
+                                  child: Text(l10n.buttonReload),
                                   key: const Key("weather_page_button_reload"),
                                 ),
                               ),
@@ -100,8 +100,8 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (ctx) =>
-                                              EmptyPage(title: widget.title))),
-                                  child: const Text("next"),
+                                              EmptyPage(title: l10n.appName))),
+                                  child: Text(l10n.buttonNext),
                                 ),
                               ),
                             )
