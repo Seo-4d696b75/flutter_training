@@ -53,13 +53,30 @@ void main() {
       // not init yet
       expect(find.byKey(keyMinTemp), withText(""));
       expect(find.byKey(keyMaxTemp), withText(""));
+      // progress indicator not shown
+      expect(
+        find.byWidgetPredicate((widget) => widget is CircularProgressIndicator),
+        findsNothing,
+      );
 
       // setup mock api
-      when(api.fetch(any)).thenReturn(mockWeather);
+      var latch = Latch();
+      when(api.fetch(any)).thenAnswer((_) async {
+        await latch.wait;
+        return mockWeather;
+      });
 
       // reload
       await tester.tap(find.byKey(keyButtonReload));
       await tester.pump();
+      // progress indicator shown while loading
+      expect(
+        find.byWidgetPredicate((widget) => widget is CircularProgressIndicator),
+        findsOneWidget,
+      );
+      // after checking, be sure to complete api#fetch
+      latch.complete();
+      await tester.pumpAndSettle();
 
       // check
       expect(find.byKey(keyMinTemp), withText("10℃"));
@@ -85,11 +102,21 @@ void main() {
 
       // setup mock
       final error = UnknownException("test");
-      when(api.fetch(any)).thenThrow(error);
+      final latch = Latch();
+      when(api.fetch(any)).thenAnswer((_) async {
+        await latch.wait;
+        throw error;
+      });
 
       // reload
       await tester.tap(find.byKey(keyButtonReload));
       await tester.pump();
+      expect(
+        find.byWidgetPredicate((widget) => widget is CircularProgressIndicator),
+        findsOneWidget,
+      );
+      latch.complete();
+      await tester.pumpAndSettle();
 
       // check
       expect(find.byKey(keyMinTemp), withText(""));
@@ -98,7 +125,7 @@ void main() {
 
       // close
       await tester.tap(find.byKey(keyButtonDialogNegative));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // check
       expect(find.byKey(keyMinTemp), withText(""));
@@ -129,7 +156,7 @@ void main() {
 
       // reload
       await tester.tap(find.byKey(keyButtonReload));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // check
       expect(find.byKey(keyMinTemp), withText(""));
@@ -137,11 +164,11 @@ void main() {
       expect(find.byKey(keyDialogTitle), findsOneWidget);
 
       // setup mock
-      when(api.fetch(any)).thenReturn(mockWeather);
+      when(api.fetch(any)).thenAnswer((_) async => mockWeather);
 
       // reload
       await tester.tap(find.byKey(keyButtonDialogPositive));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // check
       expect(find.byKey(keyMinTemp), withText("10℃"));

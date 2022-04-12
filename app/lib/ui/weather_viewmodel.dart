@@ -20,7 +20,7 @@ class WeatherViewModel extends ChangeNotifier {
 
   Event<UnknownException> get error => _reloadError;
 
-  void reload() async {
+  Future<void> reload() async {
     _loading = true;
     notifyListeners();
     try {

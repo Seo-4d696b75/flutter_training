@@ -13,7 +13,7 @@ import 'weather_repository_test.mocks.dart';
 @GenerateMocks([WeatherAPI])
 void main() {
   group("weather repository unit test", () {
-    test("update weather", () {
+    test("update weather", () async {
       final api = MockWeatherAPI();
       final container = ProviderContainer(overrides: [
         weatherAPIProvider.overrideWithValue(api),
@@ -25,13 +25,13 @@ void main() {
         minTemp: 10,
         date: DateTime.now(),
       );
-      when(api.fetch(any)).thenReturn(mockWeather);
+      when(api.fetch(any)).thenAnswer((_) async => mockWeather);
       // target
       final repository = container.read(weatherRepositoryProvider);
       // not init yet
       expect(repository.weather, isNull);
       // update
-      repository.updateWeather();
+      await repository.updateWeather();
       // check
       expect(repository.weather?.weather, Weather.sunny);
       expect(repository.weather?.minTemp, 10);

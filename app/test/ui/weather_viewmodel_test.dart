@@ -14,7 +14,7 @@ import '../data/weather_repository_test.mocks.dart';
 @GenerateMocks([WeatherAPI])
 void main() {
   group("weather view-model unit test", () {
-    test("reload", () {
+    test("reload", () async {
       final api = MockWeatherAPI();
       final container = ProviderContainer(overrides: [
         weatherAPIProvider.overrideWithValue(api),
@@ -26,28 +26,35 @@ void main() {
         minTemp: 10,
         date: DateTime.now(),
       );
-      when(api.fetch(any)).thenReturn(mockWeather);
+      when(api.fetch(any)).thenAnswer((_) async => mockWeather);
       // target
       final viewModel = container.read(weatherViewModelProvider);
       // not init yet
       expect(viewModel.weather, isNull);
       expect(viewModel.error.hasValue, false);
+      expect(viewModel.loading, false);
       // reload
-      viewModel.reload();
+      var reload = viewModel.reload();
+      expect(viewModel.loading, true);
+      await reload;
       // check
       expect(viewModel.weather?.weather, Weather.sunny);
       expect(viewModel.weather?.minTemp, 10);
       expect(viewModel.weather?.maxTemp, 20);
+      expect(viewModel.loading, false);
       expect(viewModel.error.hasValue, false);
       // setup mock api
       final mockException = UnknownException("test");
       when(api.fetch(any)).thenThrow(mockException);
       // reload
-      viewModel.reload();
+      reload = viewModel.reload();
+      expect(viewModel.loading, true);
+      await reload;
       // check
       expect(viewModel.weather?.weather, Weather.sunny);
       expect(viewModel.weather?.minTemp, 10);
       expect(viewModel.weather?.maxTemp, 20);
+      expect(viewModel.loading, false);
       expect(viewModel.error.hasValue, true);
       expect(viewModel.error.peek, mockException);
       // verify
