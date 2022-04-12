@@ -33,3 +33,6 @@ build/
 
 # auto generated file by l10n
 /lib/l10n/*.dart
+
+# auto generated file by flutter-gen
+/lib/gen/*.gen.dart

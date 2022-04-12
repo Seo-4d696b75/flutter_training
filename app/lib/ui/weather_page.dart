@@ -1,8 +1,8 @@
 import 'package:api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:hello_flutter/data/weather.dart';
+import 'package:hello_flutter/gen/assets.gen.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
 import 'package:hello_flutter/ui/empty_page.dart';
 import 'package:hello_flutter/ui/error_dialog.dart';
@@ -118,18 +118,15 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
 Widget _getWeatherImage(Weather? value) {
   switch (value) {
     case Weather.sunny:
-      return SvgPicture.asset(
-        "lib/assets/sunny.svg",
+      return Assets.images.sunny.svg(
         color: Colors.red,
       );
     case Weather.cloudy:
-      return SvgPicture.asset(
-        "lib/assets/cloudy.svg",
+      return Assets.images.cloudy.svg(
         color: Colors.grey,
       );
     case Weather.rainy:
-      return SvgPicture.asset(
-        "lib/assets/rainy.svg",
+      return Assets.images.rainy.svg(
         color: Colors.blueAccent,
       );
     default:
