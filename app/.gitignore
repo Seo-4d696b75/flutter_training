@@ -30,3 +30,6 @@ build/
 
 # auto generated files by mockito for test
 /test/**/*.mocks.dart
+
+# auto generated file by l10n
+/lib/l10n/*.dart
