@@ -1,8 +1,8 @@
 import 'package:api/api.dart';
-import 'package:api/model/response.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hello_flutter/data/weather.dart';
+import 'package:hello_flutter/data/model/weather.dart';
+import 'package:hello_flutter/data/model/weather_forecast.dart';
 import 'package:hello_flutter/data/weather_api.dart';
 import 'package:hello_flutter/data/weather_api_impl.dart';
 import 'package:hello_flutter/ui/weather_viewmodel.dart';
@@ -20,8 +20,8 @@ void main() {
         weatherAPIProvider.overrideWithValue(api),
       ]);
       // setup mock api
-      final mockWeather = Response(
-        weather: "sunny",
+      final mockWeather = WeatherForecast(
+        weather: Weather.sunny,
         maxTemp: 20,
         minTemp: 10,
         date: DateTime.now(),
@@ -31,15 +31,13 @@ void main() {
       final viewModel = container.read(weatherViewModelProvider);
       // not init yet
       expect(viewModel.weather, isNull);
-      expect(viewModel.minTemp, isNull);
-      expect(viewModel.maxTemp, isNull);
       expect(viewModel.error.hasValue, false);
       // reload
       viewModel.reload();
       // check
-      expect(viewModel.weather, Weather.sunny);
-      expect(viewModel.minTemp, 10);
-      expect(viewModel.maxTemp, 20);
+      expect(viewModel.weather?.weather, Weather.sunny);
+      expect(viewModel.weather?.minTemp, 10);
+      expect(viewModel.weather?.maxTemp, 20);
       expect(viewModel.error.hasValue, false);
       // setup mock api
       final mockException = UnknownException("test");
@@ -47,9 +45,9 @@ void main() {
       // reload
       viewModel.reload();
       // check
-      expect(viewModel.weather, Weather.sunny);
-      expect(viewModel.minTemp, 10);
-      expect(viewModel.maxTemp, 20);
+      expect(viewModel.weather?.weather, Weather.sunny);
+      expect(viewModel.weather?.minTemp, 10);
+      expect(viewModel.weather?.maxTemp, 20);
       expect(viewModel.error.hasValue, true);
       expect(viewModel.error.peek, mockException);
       // verify

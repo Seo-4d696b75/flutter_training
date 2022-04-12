@@ -36,3 +36,7 @@ build/
 
 # auto generated file by flutter-gen
 /lib/gen/*.gen.dart
+
+# auto generated-code by build_runner for freezed
+lib/**/*.freezed.dart
+lib/**/*.g.dart

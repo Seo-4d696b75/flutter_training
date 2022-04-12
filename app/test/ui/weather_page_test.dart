@@ -1,8 +1,9 @@
 import 'package:api/api.dart';
-import 'package:api/model/response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hello_flutter/data/model/weather.dart';
+import 'package:hello_flutter/data/model/weather_forecast.dart';
 import 'package:hello_flutter/data/weather_api.dart';
 import 'package:hello_flutter/data/weather_api_impl.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
@@ -22,8 +23,8 @@ void main() {
   const keyDialogTitle = Key("error_dialog_text_title");
   const keyButtonDialogNegative = Key("error_dialog_button_negative");
   const keyButtonDialogPositive = Key("error_dialog_button_positive");
-  final mockWeather = Response(
-    weather: "sunny",
+  final mockWeather = WeatherForecast(
+    weather: Weather.sunny,
     maxTemp: 20,
     minTemp: 10,
     date: DateTime.now(),

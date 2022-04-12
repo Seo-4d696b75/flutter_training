@@ -1,7 +1,7 @@
 import 'package:api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hello_flutter/data/weather.dart';
+import 'package:hello_flutter/data/model/weather.dart';
 import 'package:hello_flutter/gen/assets.gen.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
 import 'package:hello_flutter/ui/empty_page.dart';
@@ -48,13 +48,12 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
                   debugPrint("render: weather, temperature");
                   var weather = ref.watch(weatherViewModelProvider
                       .select((value) => value.weather));
-                  var minTemp = ref.watch(weatherViewModelProvider
-                      .select((value) => value.minTemp));
-                  var maxTemp = ref.watch(weatherViewModelProvider
-                      .select((value) => value.maxTemp));
+                  final minTemp = weather?.minTemp;
+                  final maxTemp = weather?.maxTemp;
                   return Column(children: [
                     AspectRatio(
-                        aspectRatio: 1.0, child: _getWeatherImage(weather)),
+                        aspectRatio: 1.0,
+                        child: _getWeatherImage(weather?.weather)),
                     Row(children: [
                       Expanded(
                         flex: 1,
