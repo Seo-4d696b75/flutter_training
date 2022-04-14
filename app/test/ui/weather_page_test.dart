@@ -29,13 +29,16 @@ void main() {
     minTemp: 10,
     date: DateTime.now(),
   );
+
   group("reload", () {
-    testWidgets("success", (tester) async {
-      // TODO 現状だと縦長のレイアウトが必須
-      tester.binding.window.physicalSizeTestValue = const Size(1080, 1920);
+    final api = MockWeatherAPI();
 
-      final api = MockWeatherAPI();
-
+    Future<void> _setupWidget(WidgetTester tester, bool portrait) async {
+      if (portrait) {
+        tester.binding.window.physicalSizeTestValue = const Size(1080, 1920);
+      } else {
+        tester.binding.window.physicalSizeTestValue = const Size(1920, 1080);
+      }
       await tester.pumpWidget(ProviderScope(
         overrides: [
           weatherAPIProvider.overrideWithValue(api),
@@ -47,22 +50,40 @@ void main() {
           supportedLocales: L10n.supportedLocales,
         ),
       ));
+    }
 
+    void _checkWeather(WeatherForecast? weather, bool dialogShown) {
       // check title
       expect(find.text(title), findsOneWidget);
       // not init yet
-      expect(find.byKey(keyMinTemp), withText(""));
-      expect(find.byKey(keyMaxTemp), withText(""));
-      // progress indicator not shown
+      expect(
+        find.byKey(keyMinTemp),
+        withText(weather?.minTemp.formatTemperature() ?? ""),
+      );
+      expect(
+        find.byKey(keyMaxTemp),
+        withText(weather?.maxTemp.formatTemperature() ?? ""),
+      );
+      // no progress indicator shown
       expect(
         find.byWidgetPredicate((widget) => widget is CircularProgressIndicator),
         findsNothing,
       );
+      // dialog
+      expect(
+        find.byKey(keyDialogTitle),
+        dialogShown ? findsOneWidget : findsNothing,
+      );
+    }
 
+    Future<void> _checkReloading(WidgetTester tester, bool throwError) async {
       // setup mock api
       var latch = Latch();
       when(api.fetch(any)).thenAnswer((_) async {
         await latch.wait;
+        if (throwError) {
+          throw UnknownException("test");
+        }
         return mockWeather;
       });
 
@@ -77,91 +98,39 @@ void main() {
       // after checking, be sure to complete api#fetch
       latch.complete();
       await tester.pumpAndSettle();
+    }
 
-      // check
-      expect(find.byKey(keyMinTemp), withText("10℃"));
-      expect(find.byKey(keyMaxTemp), withText("20℃"));
+    testWidgets("success", (tester) async {
+      await _setupWidget(tester, true);
+      _checkWeather(null, false);
+      await _checkReloading(tester, false);
+      _checkWeather(mockWeather, false);
     });
+
+    testWidgets("success - landscape", (tester) async {
+      await _setupWidget(tester, false);
+      _checkWeather(null, false);
+      await _checkReloading(tester, false);
+      _checkWeather(mockWeather, false);
+    });
+
     testWidgets("error - close", (tester) async {
-      // TODO 現状だと縦長のレイアウトが必須
-      tester.binding.window.physicalSizeTestValue = const Size(1080, 1920);
-
-      final api = MockWeatherAPI();
-
-      await tester.pumpWidget(ProviderScope(
-        overrides: [
-          weatherAPIProvider.overrideWithValue(api),
-        ],
-        child: const MaterialApp(
-          title: title,
-          home: WeatherPage(),
-          localizationsDelegates: L10n.localizationsDelegates,
-          supportedLocales: L10n.supportedLocales,
-        ),
-      ));
-
-      // setup mock
-      final error = UnknownException("test");
-      final latch = Latch();
-      when(api.fetch(any)).thenAnswer((_) async {
-        await latch.wait;
-        throw error;
-      });
-
-      // reload
-      await tester.tap(find.byKey(keyButtonReload));
-      await tester.pump();
-      expect(
-        find.byWidgetPredicate((widget) => widget is CircularProgressIndicator),
-        findsOneWidget,
-      );
-      latch.complete();
-      await tester.pumpAndSettle();
-
-      // check
-      expect(find.byKey(keyMinTemp), withText(""));
-      expect(find.byKey(keyMaxTemp), withText(""));
-      expect(find.byKey(keyDialogTitle), findsOneWidget);
+      await _setupWidget(tester, true);
+      _checkWeather(null, false);
+      await _checkReloading(tester, true);
+      _checkWeather(null, true);
 
       // close
       await tester.tap(find.byKey(keyButtonDialogNegative));
       await tester.pumpAndSettle();
 
-      // check
-      expect(find.byKey(keyMinTemp), withText(""));
-      expect(find.byKey(keyMaxTemp), withText(""));
-      expect(find.byKey(keyDialogTitle), findsNothing);
+      _checkWeather(null, false);
     });
     testWidgets("error - reload", (tester) async {
-      // TODO 現状だと縦長のレイアウトが必須
-      tester.binding.window.physicalSizeTestValue = const Size(1080, 1920);
-
-      final api = MockWeatherAPI();
-
-      await tester.pumpWidget(ProviderScope(
-        overrides: [
-          weatherAPIProvider.overrideWithValue(api),
-        ],
-        child: const MaterialApp(
-          title: title,
-          home: WeatherPage(),
-          localizationsDelegates: L10n.localizationsDelegates,
-          supportedLocales: L10n.supportedLocales,
-        ),
-      ));
-
-      // setup mock
-      final error = UnknownException("test");
-      when(api.fetch(any)).thenThrow(error);
-
-      // reload
-      await tester.tap(find.byKey(keyButtonReload));
-      await tester.pumpAndSettle();
-
-      // check
-      expect(find.byKey(keyMinTemp), withText(""));
-      expect(find.byKey(keyMaxTemp), withText(""));
-      expect(find.byKey(keyDialogTitle), findsOneWidget);
+      await _setupWidget(tester, true);
+      _checkWeather(null, false);
+      await _checkReloading(tester, true);
+      _checkWeather(null, true);
 
       // setup mock
       when(api.fetch(any)).thenAnswer((_) async => mockWeather);
@@ -170,10 +139,7 @@ void main() {
       await tester.tap(find.byKey(keyButtonDialogPositive));
       await tester.pumpAndSettle();
 
-      // check
-      expect(find.byKey(keyMinTemp), withText("10℃"));
-      expect(find.byKey(keyMaxTemp), withText("20℃"));
-      expect(find.byKey(keyDialogTitle), findsNothing);
+      _checkWeather(mockWeather, false);
     });
   });
 }
