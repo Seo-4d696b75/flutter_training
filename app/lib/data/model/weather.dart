@@ -28,3 +28,9 @@ class WeatherConverter implements JsonConverter<Weather, String> {
     return object.name.split(".").last;
   }
 }
+
+extension TemperatureFormat on int {
+  String formatTemperature() {
+    return "$this℃";
+  }
+}

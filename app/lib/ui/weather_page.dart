@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,81 +41,108 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
           title: Text(l10n.appName),
         ),
         body: Stack(children: [
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Spacer(flex: 1),
-            Expanded(
-                flex: 2,
-                child: Column(children: [
-                  const Spacer(flex: 1),
-                  Consumer(builder: (ctx, ref, _) {
-                    debugPrint("render: weather, temperature");
-                    var weather = ref.watch(weatherViewModelProvider
-                        .select((value) => value.weather));
-                    final minTemp = weather?.minTemp;
-                    final maxTemp = weather?.maxTemp;
-                    return Column(children: [
-                      AspectRatio(
-                          aspectRatio: 1.0,
-                          child: _getWeatherImage(weather?.weather)),
-                      Row(children: [
-                        Expanded(
-                          flex: 1,
-                          child: Text(minTemp != null ? "$minTemp℃" : "",
-                              textAlign: TextAlign.center,
-                              key: const Key("weather_page_text_min_temp"),
-                              style: const TextStyle(color: Colors.blue)),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Text(maxTemp != null ? "$maxTemp℃" : "",
-                              textAlign: TextAlign.center,
-                              key: const Key("weather_page_text_max_temp"),
-                              style: const TextStyle(color: Colors.red)),
-                        ),
-                      ]),
-                    ]);
-                  }),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+          LayoutBuilder(builder: (context, constraints) {
+            const minContentHeight = 16.0 + 48.0; // text + button
+            const minContentWidth = 200.0; // button, text * 2
+            var contentWidth = 0.0;
+            var imageSize = 0.0;
+            var verticalButtonMargin = 0.0;
+            var verticalContentMargin = 0.0;
+            if (constraints.maxWidth * 0.5 + minContentHeight <=
+                constraints.maxHeight) {
+              contentWidth = constraints.maxWidth * 0.5;
+              imageSize = constraints.maxWidth * 0.5;
+              if (imageSize + minContentHeight + 80 <= constraints.maxHeight) {
+                verticalButtonMargin = 80;
+                verticalContentMargin =
+                    (constraints.maxHeight - imageSize - minContentHeight) / 2;
+              } else {
+                verticalButtonMargin =
+                    constraints.maxHeight - imageSize - minContentHeight;
+                verticalContentMargin = 0;
+              }
+            } else {
+              contentWidth = max(
+                  minContentWidth, constraints.maxHeight - minContentHeight);
+              imageSize = constraints.maxHeight - (16 + 48);
+              verticalButtonMargin = 0;
+              verticalContentMargin = 0;
+            }
+            return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              SizedBox(
+                  width: contentWidth,
+                  height: constraints.maxHeight,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: verticalContentMargin,
+                      ),
+                      Consumer(builder: (ctx, ref, _) {
+                        debugPrint("render: weather, temperature");
+                        var weather = ref.watch(weatherViewModelProvider
+                            .select((value) => value.weather));
+                        return Column(children: [
+                          Container(
+                              width: imageSize,
+                              height: imageSize,
+                              padding: const EdgeInsets.all(5.0),
+                              child: _getWeatherImage(weather?.weather)),
+                          Row(children: [
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                  weather?.minTemp.formatTemperature() ?? "",
+                                  textAlign: TextAlign.center,
+                                  key: const Key("weather_page_text_min_temp"),
+                                  style: const TextStyle(color: Colors.blue)),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                  weather?.maxTemp.formatTemperature() ?? "",
+                                  textAlign: TextAlign.center,
+                                  key: const Key("weather_page_text_max_temp"),
+                                  style: const TextStyle(color: Colors.red)),
+                            ),
+                          ]),
+                        ]);
+                      }),
+                      Container(
+                        height: verticalButtonMargin,
+                      ),
+                      Row(
                         children: [
-                          Container(height: 80),
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Center(
-                                  child: ElevatedButton(
-                                    onPressed: ref
-                                        .read(weatherViewModelProvider)
-                                        .reload,
-                                    child: Text(l10n.buttonReload),
-                                    key:
-                                        const Key("weather_page_button_reload"),
-                                  ),
-                                ),
+                          Expanded(
+                            flex: 1,
+                            child: Center(
+                              child: ElevatedButton(
+                                onPressed:
+                                    ref.read(weatherViewModelProvider).reload,
+                                child: Text(l10n.buttonReload),
+                                key: const Key("weather_page_button_reload"),
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: Center(
-                                  child: ElevatedButton(
-                                    onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (ctx) => EmptyPage(
-                                                title: l10n.appName))),
-                                    child: Text(l10n.buttonNext),
-                                  ),
-                                ),
-                              )
-                            ],
+                            ),
                           ),
-                        ]),
-                  ),
-                ])),
-            const Spacer(flex: 1),
-          ]),
+                          Expanded(
+                            flex: 1,
+                            child: Center(
+                              child: ElevatedButton(
+                                onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (ctx) =>
+                                            EmptyPage(title: l10n.appName))),
+                                child: Text(l10n.buttonNext),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  )),
+            ]);
+          }),
           Consumer(builder: (ctx, ref, _) {
             final isLoading = ref.watch(
                 weatherViewModelProvider.select((value) => value.loading));
