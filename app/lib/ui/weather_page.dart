@@ -11,18 +11,11 @@ import 'package:hello_flutter/ui/error_dialog.dart';
 import 'package:hello_flutter/ui/event.dart';
 import 'package:hello_flutter/ui/weather_viewmodel.dart';
 
-class WeatherPage extends ConsumerStatefulWidget {
+class WeatherPage extends ConsumerWidget {
   const WeatherPage({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() {
-    return _WeatherPageState();
-  }
-}
-
-class _WeatherPageState extends ConsumerState<WeatherPage> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     ref.listenEvent<UnknownException>(
         weatherViewModelProvider.select((value) => value.error), (error) async {
       debugPrint("error callback: $error");
@@ -42,29 +35,51 @@ class _WeatherPageState extends ConsumerState<WeatherPage> {
         ),
         body: Stack(children: [
           LayoutBuilder(builder: (context, constraints) {
-            const minContentHeight = 16.0 + 48.0; // text + button
+            // maxWidth > 200 && maxHeight > 100 以上を想定
+            // 任意のアスペクト比に対応
+            const textHeight = 18.0;
+            const buttonHeight = 48.0;
             const minContentWidth = 200.0; // button, text * 2
             var contentWidth = 0.0;
             var imageSize = 0.0;
             var verticalButtonMargin = 0.0;
             var verticalContentMargin = 0.0;
-            if (constraints.maxWidth * 0.5 + minContentHeight <=
+            if (constraints.maxWidth * 0.5 + textHeight + buttonHeight <=
                 constraints.maxHeight) {
+              // 画像の大きさ = width/2 が設定可能
               contentWidth = constraints.maxWidth * 0.5;
               imageSize = constraints.maxWidth * 0.5;
-              if (imageSize + minContentHeight + 80 <= constraints.maxHeight) {
-                verticalButtonMargin = 80;
+              if (imageSize + textHeight + (buttonHeight + 80) * 2 <=
+                  constraints.maxHeight) {
+                // 元の指示通りのレイアウトが可能
+                // https://github.com/yumemi/droid-training/blob/master/Documentation/Layout.md
                 verticalContentMargin =
-                    (constraints.maxHeight - imageSize - minContentHeight) / 2;
+                    (constraints.maxHeight - imageSize - textHeight) / 2;
+                verticalButtonMargin = 80;
+              } else if (imageSize + textHeight + buttonHeight * 2 <=
+                  constraints.maxHeight) {
+                // 高さ不十分
+                // button - text 間の80pxを縮小させる
+                verticalContentMargin =
+                    (constraints.maxHeight - imageSize - textHeight) / 2;
+                verticalButtonMargin = verticalContentMargin - buttonHeight;
               } else {
-                verticalButtonMargin =
-                    constraints.maxHeight - imageSize - minContentHeight;
-                verticalContentMargin = 0;
+                // 高さがさらに不十分
+                // button - text 間を0px, 画像上端のmarginを縮小させる
+                verticalContentMargin = constraints.maxHeight -
+                    imageSize -
+                    textHeight -
+                    buttonHeight;
+                verticalButtonMargin = 0;
               }
             } else {
+              // 高さ不十分
+              // 画像サイズを縮小 ただしbutton,text表示のため最小限の幅は確保
               contentWidth = max(
-                  minContentWidth, constraints.maxHeight - minContentHeight);
-              imageSize = constraints.maxHeight - (16 + 48);
+                minContentWidth,
+                constraints.maxHeight - textHeight - buttonHeight,
+              );
+              imageSize = constraints.maxHeight - textHeight - buttonHeight;
               verticalButtonMargin = 0;
               verticalContentMargin = 0;
             }
