@@ -13,7 +13,7 @@ Android+Kotlinで実装されたインターン・アルバイト研修用課題
 [x] MVVMの導入(riverpod)  
 [x] テストの追加  
 [x] リソースデータの扱い(localizations,gen)  
-[ ] 非同期処理
+[x] 非同期処理
 
 ## setup
 
