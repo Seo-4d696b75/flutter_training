@@ -12,7 +12,7 @@ class WeatherAPIImpl implements WeatherAPI {
       : _api = OpenWeatherMapAPI(
           client,
           apiKey,
-          language: "jp",
+          language: "ja",
           units: "metric",
         );
 
