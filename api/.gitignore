@@ -12,3 +12,5 @@ pubspec.lock
 # auto generated-code by build_runner for freezed
 lib/**/*.freezed.dart
 lib/**/*.g.dart
+
+test/**/*.mocks.dart
