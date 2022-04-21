@@ -1,22 +1,22 @@
 import 'dart:math';
 
-import 'package:api/api.dart';
+import 'package:api/model/weather.dart';
+import 'package:api/open_weather_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hello_flutter/data/model/weather.dart';
-import 'package:hello_flutter/gen/assets.gen.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
 import 'package:hello_flutter/ui/empty_page.dart';
 import 'package:hello_flutter/ui/error_dialog.dart';
 import 'package:hello_flutter/ui/event.dart';
 import 'package:hello_flutter/ui/weather_viewmodel.dart';
+import 'package:intl/intl.dart';
 
 class WeatherPage extends ConsumerWidget {
   const WeatherPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listenEvent<UnknownException>(
+    ref.listenEvent<APIException>(
         weatherViewModelProvider.select((value) => value.error), (error) async {
       debugPrint("error callback: $error");
       var result = await showDialog<ErrorDialogResult?>(
@@ -107,7 +107,8 @@ class WeatherPage extends ConsumerWidget {
                             Expanded(
                               flex: 1,
                               child: Text(
-                                  weather?.minTemp.formatTemperature() ?? "",
+                                  formatTemperature(
+                                      weather?.main.minTemperature),
                                   textAlign: TextAlign.center,
                                   key: const Key("weather_page_text_min_temp"),
                                   style: const TextStyle(color: Colors.blue)),
@@ -115,7 +116,8 @@ class WeatherPage extends ConsumerWidget {
                             Expanded(
                               flex: 1,
                               child: Text(
-                                  weather?.maxTemp.formatTemperature() ?? "",
+                                  formatTemperature(
+                                      weather?.main.maxTemperature),
                                   textAlign: TextAlign.center,
                                   key: const Key("weather_page_text_max_temp"),
                                   style: const TextStyle(color: Colors.red)),
@@ -176,27 +178,26 @@ class WeatherPage extends ConsumerWidget {
   }
 }
 
+String formatTemperature(double? value) {
+  var f = NumberFormat("0.0℃");
+  return value == null ? "" : f.format(value);
+}
+
 Widget _getWeatherImage(Weather? value) {
-  switch (value) {
-    case Weather.sunny:
-      return Assets.images.sunny.svg(
-        color: Colors.red,
-      );
-    case Weather.cloudy:
-      return Assets.images.cloudy.svg(
-        color: Colors.grey,
-      );
-    case Weather.rainy:
-      return Assets.images.rainy.svg(
-        color: Colors.blueAccent,
-      );
-    default:
-      return const FittedBox(
-        fit: BoxFit.fitWidth,
-        child: Icon(
-          Icons.image_not_supported_outlined,
-          color: Colors.blueGrey,
-        ),
-      );
+  if (value != null) {
+    return FittedBox(
+      fit: BoxFit.fitWidth,
+      child: Image.network(
+        "http://openweathermap.org/img/wn/${value.icon}@2x.png",
+      ),
+    );
+  } else {
+    return const FittedBox(
+      fit: BoxFit.fitWidth,
+      child: Icon(
+        Icons.image_not_supported_outlined,
+        color: Colors.blueGrey,
+      ),
+    );
   }
 }
