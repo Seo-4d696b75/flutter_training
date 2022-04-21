@@ -4,6 +4,7 @@ import 'package:api/model/weather.dart';
 import 'package:api/open_weather_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hello_flutter/gen/assets.gen.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
 import 'package:hello_flutter/ui/empty_page.dart';
 import 'package:hello_flutter/ui/error_dialog.dart';
@@ -184,20 +185,31 @@ String formatTemperature(double? value) {
 }
 
 Widget _getWeatherImage(Weather? value) {
-  if (value != null) {
-    return FittedBox(
-      fit: BoxFit.fitWidth,
-      child: Image.network(
-        "http://openweathermap.org/img/wn/${value.icon}@2x.png",
-      ),
-    );
-  } else {
-    return const FittedBox(
-      fit: BoxFit.fitWidth,
-      child: Icon(
-        Icons.image_not_supported_outlined,
-        color: Colors.blueGrey,
-      ),
-    );
+  switch (value?.icon) {
+    case WeatherIcon.clearSky:
+      return Assets.images.clearSky.svg();
+    case WeatherIcon.fewClouds:
+      return Assets.images.fewClouds.svg();
+    case WeatherIcon.scatteredClouds:
+      return Assets.images.scatteredClouds.svg();
+    case WeatherIcon.brokenClouds:
+      return Assets.images.brokenClouds.svg();
+    case WeatherIcon.showerRain:
+    case WeatherIcon.rain:
+      return Assets.images.rain.svg();
+    case WeatherIcon.thunderstorm:
+      return Assets.images.thunderstorm.svg();
+    case WeatherIcon.snow:
+      return Assets.images.snow.svg();
+    case WeatherIcon.mist:
+      return Assets.images.mist.svg();
+    default:
+      return const FittedBox(
+        fit: BoxFit.fitWidth,
+        child: Icon(
+          Icons.image_not_supported_outlined,
+          color: Colors.blueGrey,
+        ),
+      );
   }
 }
