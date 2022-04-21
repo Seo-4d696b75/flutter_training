@@ -23,7 +23,7 @@ void main() {
     expect(weather.id, 800);
     expect(weather.main, "Clear");
     expect(weather.description, "clear sky");
-    expect(weather.icon, "01d");
+    expect(weather.icon, WeatherIcon.clearSky);
   });
   test("decode main climatic elements", () {
     const str = """
