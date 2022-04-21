@@ -25,5 +25,5 @@ class WeatherRepositoryImpl implements WeatherRepository {
 }
 
 final weatherRepositoryProvider = Provider<WeatherRepository>(
-  (ref) => WeatherRepositoryImpl(ref.read(weatherAPIProvider)),
+  (ref) => WeatherRepositoryImpl(ref.watch(weatherAPIProvider)),
 );

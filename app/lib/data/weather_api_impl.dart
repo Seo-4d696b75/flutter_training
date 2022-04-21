@@ -4,15 +4,16 @@ import 'package:api/model/city.dart';
 import 'package:api/model/current_weather.dart';
 import 'package:api/open_weather_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hello_flutter/app.dart';
 import 'package:hello_flutter/data/weather_api.dart';
 import 'package:http/http.dart';
 
 class WeatherAPIImpl implements WeatherAPI {
-  WeatherAPIImpl(Client client, String apiKey)
+  WeatherAPIImpl(Client client, String apiKey, String language)
       : _api = OpenWeatherMapAPI(
           client,
           apiKey,
-          language: "ja",
+          language: language,
           units: "metric",
         );
 
@@ -36,5 +37,6 @@ final apiKeyProvider =
 final weatherAPIProvider = Provider<WeatherAPI>((ref) {
   var client = ref.read(httpClientProvider);
   var apiKey = ref.read(apiKeyProvider);
-  return WeatherAPIImpl(client, apiKey);
+  var locale = ref.watch(localeProvider);
+  return WeatherAPIImpl(client, apiKey, locale.languageCode);
 });

@@ -35,5 +35,5 @@ class WeatherViewModel extends ChangeNotifier {
 }
 
 final weatherViewModelProvider = ChangeNotifierProvider(
-  (ref) => WeatherViewModel(ref.read(weatherRepositoryProvider)),
+  (ref) => WeatherViewModel(ref.watch(weatherRepositoryProvider)),
 );
