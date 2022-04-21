@@ -38,7 +38,7 @@ class WeatherPage extends ConsumerWidget {
           LayoutBuilder(builder: (context, constraints) {
             // maxWidth > 200 && maxHeight > 100 以上を想定
             // 任意のアスペクト比に対応
-            const textHeight = 18.0;
+            const textHeight = 18.0 + 28.0;
             const buttonHeight = 48.0;
             const minContentWidth = 200.0; // button, text * 2
             var contentWidth = 0.0;
@@ -99,6 +99,12 @@ class WeatherPage extends ConsumerWidget {
                         var weather = ref.watch(weatherViewModelProvider
                             .select((value) => value.weather));
                         return Column(children: [
+                          Center(
+                            child: Text(
+                              weather?.cityName ?? "",
+                              style: const TextStyle(fontSize: 24),
+                            ),
+                          ),
                           Container(
                               width: imageSize,
                               height: imageSize,
