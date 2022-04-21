@@ -14,8 +14,21 @@ Android+Kotlinで実装されたインターン・アルバイト研修用課題
 [x] テストの追加  
 [x] リソースデータの扱い(localizations,gen)  
 [x] 非同期処理
+[x] httpでAPIを叩く
+[ ] 一覧ページを作成
+[ ] ページ遷移を実装
 
 ## setup
+
+### API keyの取得
+
+[Open Weather Map API](https://openweathermap.org/)を利用します  
+サインインしてAPI keyを生成したら、  
+Edit Configurations > Additional run args: から次のように指定する
+
+```bash
+--dart-define=API_KEY=${your_key}
+```
 
 ### [freezed](https://pub.dev/packages/freezed)
 
