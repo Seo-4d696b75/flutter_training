@@ -29,9 +29,24 @@ class OpenWeatherMapAPI {
   }
 
   Future<CurrentWeather> fetchCurrentWeather(City city) async {
-    var query = _getQuery({"id": city.id.toString()});
-    var url = Uri.https(_host, "$_basePath/weather", query);
-    var res = await _client.get(url);
-    return CurrentWeather.fromJson(json.decode(res.body));
+    try {
+      var query = _getQuery({"id": city.id.toString()});
+      var url = Uri.https(_host, "$_basePath/weather", query);
+      var res = await _client.get(url);
+      return CurrentWeather.fromJson(json.decode(res.body));
+    } catch (e) {
+      throw APIException("fail to fetch current weather ${city.name}: $e");
+    }
+  }
+}
+
+class APIException implements Exception {
+  APIException(this.message);
+
+  final dynamic message;
+
+  @override
+  String toString() {
+    return "UnknownException{$message}";
   }
 }
