@@ -2,7 +2,7 @@
   "@@locale": "en",
   "appName": "droidtraining",
   "buttonReload": "Reload",
-  "buttonNext": "Next",
+  "buttonNext": "List",
   "errorDialogTitle": "Error",
   "errorDialogMessage": "An error has happened.",
   "errorDialogPositive": "Reload",
