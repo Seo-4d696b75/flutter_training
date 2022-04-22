@@ -6,5 +6,7 @@
   "errorDialogTitle": "Error",
   "errorDialogMessage": "エラーが発生しました.",
   "errorDialogPositive": "再試行",
-  "errorDialogNegative": "閉じる"
+  "errorDialogNegative": "閉じる",
+  "errorListTileTitle": "エラー",
+  "errorListTileSubTitle": "再度読み込んでください."
 }

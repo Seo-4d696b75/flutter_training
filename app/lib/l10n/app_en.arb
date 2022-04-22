@@ -6,5 +6,7 @@
   "errorDialogTitle": "Error",
   "errorDialogMessage": "An error has happened.",
   "errorDialogPositive": "Reload",
-  "errorDialogNegative": "Close"
+  "errorDialogNegative": "Close",
+  "errorListTileTitle": "Error",
+  "errorListTileSubTitle": "please retry to load."
 }
