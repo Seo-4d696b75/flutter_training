@@ -1,9 +1,10 @@
-import 'package:api/api.dart';
+import 'dart:convert';
+
+import 'package:api/model/current_weather.dart';
+import 'package:api/open_weather_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hello_flutter/data/model/weather.dart';
-import 'package:hello_flutter/data/model/weather_forecast.dart';
 import 'package:hello_flutter/data/weather_api.dart';
 import 'package:hello_flutter/data/weather_api_impl.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
@@ -23,12 +24,11 @@ void main() {
   const keyDialogTitle = Key("error_dialog_text_title");
   const keyButtonDialogNegative = Key("error_dialog_button_negative");
   const keyButtonDialogPositive = Key("error_dialog_button_positive");
-  final mockWeather = WeatherForecast(
-    weather: Weather.sunny,
-    maxTemp: 20,
-    minTemp: 10,
-    date: DateTime.now(),
-  );
+
+  const jsonStr = """
+          {"coord":{"lon":139.6917,"lat":35.6895},"weather":[{"id":803,"main":"Clouds","description":"曇りがち","icon":"04n"}],"base":"stations","main":{"temp":17.48,"feels_like":16.88,"temp_min":15.97,"temp_max":18.13,"pressure":1015,"humidity":61},"visibility":10000,"wind":{"speed":6.17,"deg":200},"clouds":{"all":75},"dt":1650359863,"sys":{"type":2,"id":2038398,"country":"JP","sunrise":1650312233,"sunset":1650359798},"timezone":32400,"id":1850147,"name":"東京都","cod":200}
+      """;
+  final mockWeather = CurrentWeather.fromJson(json.decode(jsonStr));
 
   group("reload", () {
     final api = MockWeatherAPI();
@@ -52,17 +52,17 @@ void main() {
       ));
     }
 
-    void _checkWeather(WeatherForecast? weather, bool dialogShown) {
+    void _checkWeather(CurrentWeather? weather, bool dialogShown) {
       // check title
       expect(find.text(title), findsOneWidget);
       // not init yet
       expect(
         find.byKey(keyMinTemp),
-        withText(weather?.minTemp.formatTemperature() ?? ""),
+        withText(formatTemperature(weather?.main.minTemperature)),
       );
       expect(
         find.byKey(keyMaxTemp),
-        withText(weather?.maxTemp.formatTemperature() ?? ""),
+        withText(formatTemperature(weather?.main.maxTemperature)),
       );
       // no progress indicator shown
       expect(
@@ -82,7 +82,7 @@ void main() {
       when(api.fetch(any)).thenAnswer((_) async {
         await latch.wait;
         if (throwError) {
-          throw UnknownException("test");
+          throw APIException("test");
         }
         return mockWeather;
       });
