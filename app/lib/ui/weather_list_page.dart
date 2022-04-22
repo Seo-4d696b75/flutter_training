@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hello_flutter/app.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
 import 'package:hello_flutter/ui/weather_list_viewmodel.dart';
 import 'package:hello_flutter/ui/weather_page.dart';
@@ -19,8 +20,6 @@ class WeatherListPage extends ConsumerWidget {
       body: Stack(
         children: [
           Consumer(builder: (ctx, ref, _) {
-            // reload data if needed
-            ref.read(weatherListViewModelProvider).reload(lazy: true);
             final list = ref.watch(
               weatherListViewModelProvider.select((value) => value.weatherList),
             );
@@ -80,6 +79,12 @@ class WeatherListPage extends ConsumerWidget {
             );
           }),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.refresh),
+        onPressed: () {
+          ref.read(weatherListViewModelProvider).reload(lazy: false);
+        },
       ),
     );
   }

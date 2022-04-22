@@ -19,6 +19,7 @@ class WeatherListViewModel extends ChangeNotifier {
 
   Future<void> reload({bool lazy = false}) async {
     if (lazy && weatherList.isNotEmpty) return;
+    if (_loading) return;
     _loading = true;
     notifyListeners();
     try {
