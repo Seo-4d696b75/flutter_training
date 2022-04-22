@@ -28,7 +28,7 @@ class WeatherListPage extends ConsumerWidget {
               itemCount: list.length,
               itemBuilder: (ctx, idx) {
                 return list[idx].when(
-                  success: (weather) => ListTile(
+                  data: (weather) => ListTile(
                     leading: SizedBox(
                       width: 80,
                       height: 80,
@@ -49,8 +49,16 @@ class WeatherListPage extends ConsumerWidget {
                         ),
                       ],
                     ),
+                    onTap: () {
+                      Navigator.push(
+                        ctx,
+                        MaterialPageRoute(
+                          builder: (_) => wrapWithLocale(const WeatherPage()),
+                        ),
+                      );
+                    },
                   ),
-                  failure: (error) => ListTile(
+                  error: (error) => ListTile(
                     leading: SizedBox(
                       width: 80,
                       height: 80,
@@ -58,6 +66,9 @@ class WeatherListPage extends ConsumerWidget {
                     ),
                     title: Text(l10n.errorListTileTitle),
                     subtitle: Text(l10n.errorListTileSubTitle),
+                  ),
+                  none: () => Container(
+                    height: 0,
                   ),
                 );
               },
@@ -83,7 +94,7 @@ class WeatherListPage extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.refresh),
         onPressed: () {
-          ref.read(weatherListViewModelProvider).reload(lazy: false);
+          ref.read(weatherListViewModelProvider).reload();
         },
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:api/model/city.dart';
 import 'package:api/model/current_weather.dart';
 import 'package:api/open_weather_map.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,12 @@ class WeatherViewModel extends ChangeNotifier {
   Event<APIException> _reloadError = Event.none();
   bool _loading = false;
 
-  CurrentWeather? get weather => _repository.weather;
+  CurrentWeather? get weather =>
+      _repository.allWeather[_repository.selectedCityIndex].when(
+        data: (v) => v,
+        error: (_) => null,
+        none: () => null,
+      );
 
   bool get loading => _loading;
 
@@ -25,10 +31,20 @@ class WeatherViewModel extends ChangeNotifier {
   Future<void> reload() async {
     _loading = true;
     notifyListeners();
+    final currentIndex = _repository.selectedCityIndex;
+    final nextIndex = (currentIndex + 1) % cities.length;
+    final index = _repository.allWeather[currentIndex].when(
+      data: (_) => nextIndex,
+      error: (_) => currentIndex,
+      none: () => currentIndex,
+    );
     try {
-      await _repository.updateWeather();
-    } on APIException catch (e) {
-      _reloadError = Event.create(e);
+      var error = await _repository.updateSelected(index);
+      if (error != null) {
+        _reloadError = Event.create(error);
+      } else {
+        _repository.selectedCityIndex = index;
+      }
     } finally {
       _loading = false;
       notifyListeners();
