@@ -2,6 +2,8 @@ import 'package:api/model/current_weather.dart';
 import 'package:api/open_weather_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hello_flutter/app.dart';
+import 'package:hello_flutter/data/weather_api_impl.dart';
 import 'package:hello_flutter/data/weather_repository.dart';
 import 'package:hello_flutter/ui/event.dart';
 
@@ -36,4 +38,9 @@ class WeatherViewModel extends ChangeNotifier {
 
 final weatherViewModelProvider = ChangeNotifierProvider(
   (ref) => WeatherViewModel(ref.watch(weatherRepositoryProvider)),
+  dependencies: [
+    localeProvider,
+    weatherAPIProvider,
+    weatherRepositoryProvider,
+  ],
 );

@@ -9,7 +9,8 @@ class MyApp extends StatelessWidget {
   // このwidgetはアプリのroot UI要素です
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return ProviderScope(
+      child: MaterialApp(
         title: "droidtraining",
         theme: ThemeData(
           // このアプリのテーマ（アプリ全般に適用させる統一的なUIデザインの設定情報）.
@@ -17,20 +18,27 @@ class MyApp extends StatelessWidget {
         ),
         localizationsDelegates: L10n.localizationsDelegates,
         supportedLocales: L10n.supportedLocales,
-        home: Builder(
-          builder: (context) {
-            var l10n = L10n.of(context)!;
-            var locale = Locale(l10n.localeName);
-            debugPrint("locale: $locale");
-            return ProviderScope(
-              child: const WeatherPage(),
-              overrides: [
-                localeProvider.overrideWithValue(locale),
-              ],
-            );
-          },
-        ));
+        home: wrapWithLocale(const WeatherPage()),
+      ),
+    );
   }
 }
 
 final localeProvider = Provider<Locale>((_) => const Locale("ja"));
+
+// MaterialAppの内側でないとlocale情報をcontextから読み出せない
+Widget wrapWithLocale(Widget child) {
+  return Builder(
+    builder: (context) {
+      var l10n = L10n.of(context)!;
+      var locale = Locale(l10n.localeName);
+      debugPrint("locale: $locale");
+      return ProviderScope(
+        child: child,
+        overrides: [
+          localeProvider.overrideWithValue(locale),
+        ],
+      );
+    },
+  );
+}

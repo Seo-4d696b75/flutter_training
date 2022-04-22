@@ -1,7 +1,9 @@
 import 'package:api/model/current_weather.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hello_flutter/app.dart';
 import 'package:hello_flutter/data/result.dart';
+import 'package:hello_flutter/data/weather_api_impl.dart';
 import 'package:hello_flutter/data/weather_repository.dart';
 import 'package:hello_flutter/data/weather_repository_impl.dart';
 
@@ -30,4 +32,9 @@ class WeatherListViewModel extends ChangeNotifier {
 
 final weatherListViewModelProvider = ChangeNotifierProvider(
   (ref) => WeatherListViewModel(ref.watch(weatherRepositoryProvider)),
+  dependencies: [
+    localeProvider,
+    weatherAPIProvider,
+    weatherRepositoryProvider,
+  ],
 );

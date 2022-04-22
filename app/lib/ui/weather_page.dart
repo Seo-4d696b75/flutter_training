@@ -4,11 +4,12 @@ import 'package:api/model/weather.dart';
 import 'package:api/open_weather_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hello_flutter/app.dart';
 import 'package:hello_flutter/gen/assets.gen.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
-import 'package:hello_flutter/ui/empty_page.dart';
 import 'package:hello_flutter/ui/error_dialog.dart';
 import 'package:hello_flutter/ui/event.dart';
+import 'package:hello_flutter/ui/weather_list_page.dart';
 import 'package:hello_flutter/ui/weather_viewmodel.dart';
 import 'package:intl/intl.dart';
 
@@ -109,7 +110,7 @@ class WeatherPage extends ConsumerWidget {
                               width: imageSize,
                               height: imageSize,
                               padding: const EdgeInsets.all(5.0),
-                              child: _getWeatherImage(weather?.weather)),
+                              child: getWeatherImage(weather?.weather)),
                           Row(children: [
                             Expanded(
                               flex: 1,
@@ -152,15 +153,20 @@ class WeatherPage extends ConsumerWidget {
                             flex: 1,
                             child: Center(
                               child: ElevatedButton(
-                                onPressed: () => Navigator.push(
+                                onPressed: () {
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (ctx) =>
-                                            EmptyPage(title: l10n.appName))),
+                                      builder: (ctx) => wrapWithLocale(
+                                        const WeatherListPage(),
+                                      ),
+                                    ),
+                                  );
+                                },
                                 child: Text(l10n.buttonNext),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ],
@@ -190,7 +196,7 @@ String formatTemperature(double? value) {
   return value == null ? "" : f.format(value);
 }
 
-Widget _getWeatherImage(Weather? value) {
+Widget getWeatherImage(Weather? value) {
   switch (value?.icon) {
     case WeatherIcon.clearSky:
       return Assets.images.clearSky.svg();
