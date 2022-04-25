@@ -154,14 +154,18 @@ class WeatherPage extends ConsumerWidget {
                             child: Center(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (ctx) => wrapWithLocale(
-                                        const WeatherListPage(),
+                                  if (Navigator.canPop(context)) {
+                                    Navigator.pop(context);
+                                  } else {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (ctx) => wrapWithLocale(
+                                          const WeatherListPage(),
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  }
                                 },
                                 child: Text(l10n.buttonNext),
                               ),

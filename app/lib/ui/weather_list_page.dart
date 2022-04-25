@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hello_flutter/app.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
@@ -11,6 +10,9 @@ class WeatherListPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      ref.read(weatherListViewModelProvider).reload();
+    });
     debugPrint("WeatherListPage build");
     final l10n = L10n.of(context)!;
     return Scaffold(
@@ -50,10 +52,13 @@ class WeatherListPage extends ConsumerWidget {
                       ],
                     ),
                     onTap: () {
+                      ref.read(weatherListViewModelProvider).selectCity(idx);
                       Navigator.push(
-                        ctx,
+                        context,
                         MaterialPageRoute(
-                          builder: (_) => wrapWithLocale(const WeatherPage()),
+                          builder: (ctx) => wrapWithLocale(
+                            const WeatherPage(),
+                          ),
                         ),
                       );
                     },
