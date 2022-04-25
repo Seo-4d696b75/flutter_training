@@ -9,15 +9,16 @@ import 'package:hello_flutter/data/weather_repository.dart';
 import 'package:hello_flutter/data/weather_repository_impl.dart';
 
 class WeatherListViewModel extends ChangeNotifier {
-  WeatherListViewModel(WeatherRepository repository) : _repository = repository;
+  WeatherListViewModel(WeatherRepository repository)
+      : _repository = repository,
+        _weatherList =
+            repository.allWeather.map((e) => WeatherState(e, false)).toList();
 
   final WeatherRepository _repository;
+  List<WeatherState> _weatherList;
   bool _loading = false;
 
-  List<StatefulValue<CurrentWeather, APIException>> get weatherList =>
-      _repository.allWeather;
-
-  bool get loading => _loading;
+  List<WeatherState> get weatherList => _weatherList;
 
   void selectCity(int index) {
     _repository.selectedCityIndex = index;
@@ -26,6 +27,11 @@ class WeatherListViewModel extends ChangeNotifier {
   Future<void> reload({int index = -1}) async {
     if (_loading) return;
     _loading = true;
+    _weatherList = _repository.allWeather.asMap().entries.map((e) {
+      var i = e.key;
+      var value = e.value;
+      return WeatherState(value, index == i);
+    }).toList();
     notifyListeners();
     try {
       if (index < 0) {
@@ -35,6 +41,8 @@ class WeatherListViewModel extends ChangeNotifier {
       }
     } finally {
       _loading = false;
+      _weatherList =
+          _repository.allWeather.map((e) => WeatherState(e, false)).toList();
       notifyListeners();
     }
   }
@@ -48,3 +56,10 @@ final weatherListViewModelProvider = ChangeNotifierProvider(
     weatherRepositoryProvider,
   ],
 );
+
+class WeatherState {
+  const WeatherState(this.value, this.loading);
+
+  final StatefulValue<CurrentWeather, APIException> value;
+  final bool loading;
+}

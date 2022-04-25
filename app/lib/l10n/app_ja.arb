@@ -1,7 +1,7 @@
 {
   "@@locale": "ja",
   "appName": "droidtraining",
-  "buttonReload": "更新",
+  "buttonReload": "次へ",
   "buttonNext": "一覧",
   "errorDialogTitle": "Error",
   "errorDialogMessage": "エラーが発生しました.",

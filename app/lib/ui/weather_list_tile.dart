@@ -1,8 +1,6 @@
-import 'package:api/model/current_weather.dart';
-import 'package:api/open_weather_map.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_flutter/data/stateful_value.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
+import 'package:hello_flutter/ui/weather_list_viewmodel.dart';
 import 'package:hello_flutter/ui/weather_section.dart';
 
 class WeatherListTile extends StatelessWidget {
@@ -14,7 +12,7 @@ class WeatherListTile extends StatelessWidget {
     required this.onItemReloadCallback,
   }) : super(key: key);
 
-  final StatefulValue<CurrentWeather, APIException> data;
+  final WeatherState data;
   final int index;
   final void Function() onSelectedCallback;
   final void Function() onItemReloadCallback;
@@ -22,7 +20,7 @@ class WeatherListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context)!;
-    return data.when(
+    return data.value.when(
       data: (weather) => ListTile(
         leading: SizedBox(
           width: 80,
@@ -60,11 +58,7 @@ class WeatherListTile extends StatelessWidget {
         ),
         title: Text(l10n.errorListTileTitle),
         subtitle: Text(l10n.errorListTileSubTitle),
-        trailing: IconButton(
-          icon: const Icon(Icons.refresh),
-          onPressed: onItemReloadCallback,
-          iconSize: 30,
-        ),
+        trailing: _renderReloadSection(),
       ),
       none: () => ListTile(
         leading: const SizedBox(
@@ -80,12 +74,20 @@ class WeatherListTile extends StatelessWidget {
         ),
         title: Text(l10n.noneListTileTitle),
         subtitle: Text(l10n.noneListTileSubTitle),
-        trailing: IconButton(
-          icon: const Icon(Icons.refresh),
-          onPressed: onItemReloadCallback,
-          iconSize: 30,
-        ),
+        trailing: _renderReloadSection(),
       ),
     );
+  }
+
+  Widget _renderReloadSection() {
+    if (data.loading) {
+      return const CircularProgressIndicator();
+    } else {
+      return IconButton(
+        icon: const Icon(Icons.refresh),
+        onPressed: onItemReloadCallback,
+        iconSize: 30,
+      );
+    }
   }
 }

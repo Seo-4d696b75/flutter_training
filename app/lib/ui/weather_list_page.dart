@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hello_flutter/app.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
-import 'package:hello_flutter/ui/loading_progress.dart';
 import 'package:hello_flutter/ui/weather_list_tile.dart';
 import 'package:hello_flutter/ui/weather_list_viewmodel.dart';
 import 'package:hello_flutter/ui/weather_page.dart';
@@ -12,8 +11,9 @@ class WeatherListPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final indicator = GlobalKey<RefreshIndicatorState>();
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      ref.read(weatherListViewModelProvider).reload();
+      indicator.currentState?.show();
     });
     debugPrint("WeatherListPage build");
     final l10n = L10n.of(context)!;
@@ -28,39 +28,36 @@ class WeatherListPage extends ConsumerWidget {
               weatherListViewModelProvider.select((value) => value.weatherList),
             );
             debugPrint("render: weather list");
-            return ListView.builder(
-              itemCount: list.length,
-              itemBuilder: (ctx, idx) => WeatherListTile(
-                index: idx,
-                data: list[idx],
-                onSelectedCallback: () {
-                  ref.read(weatherListViewModelProvider).selectCity(idx);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (ctx) => wrapWithLocale(
-                        const WeatherPage(),
+            return RefreshIndicator(
+              child: ListView.builder(
+                itemCount: list.length,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemBuilder: (ctx, idx) => WeatherListTile(
+                  index: idx,
+                  data: list[idx],
+                  onSelectedCallback: () {
+                    ref.read(weatherListViewModelProvider).selectCity(idx);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (ctx) => wrapWithLocale(
+                          const WeatherPage(),
+                        ),
                       ),
-                    ),
-                  );
-                },
-                onItemReloadCallback: () {
-                  ref.read(weatherListViewModelProvider).reload(index: idx);
-                },
+                    );
+                  },
+                  onItemReloadCallback: () {
+                    ref.read(weatherListViewModelProvider).reload(index: idx);
+                  },
+                ),
               ),
+              onRefresh: () async {
+                await ref.read(weatherListViewModelProvider).reload();
+              },
+              key: indicator,
             );
           }),
-          LoadingProgress(
-            loadingProvider:
-                weatherListViewModelProvider.select((value) => value.loading),
-          ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.refresh),
-        onPressed: () {
-          ref.read(weatherListViewModelProvider).reload();
-        },
       ),
     );
   }
