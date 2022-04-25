@@ -44,6 +44,9 @@ class WeatherListPage extends ConsumerWidget {
                     ),
                   );
                 },
+                onItemReloadCallback: () {
+                  ref.read(weatherListViewModelProvider).reload(index: idx);
+                },
               ),
             );
           }),

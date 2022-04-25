@@ -8,5 +8,7 @@
   "errorDialogPositive": "再試行",
   "errorDialogNegative": "閉じる",
   "errorListTileTitle": "エラー",
-  "errorListTileSubTitle": "再度読み込んでください."
+  "errorListTileSubTitle": "再度読み込んでください.",
+  "noneListTileTitle": "不明",
+  "noneListTileSubTitle": "データがありません."
 }

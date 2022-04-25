@@ -11,11 +11,13 @@ class WeatherListTile extends StatelessWidget {
     required this.index,
     required this.data,
     required this.onSelectedCallback,
+    required this.onItemReloadCallback,
   }) : super(key: key);
 
   final StatefulValue<CurrentWeather, APIException> data;
   final int index;
   final void Function() onSelectedCallback;
+  final void Function() onItemReloadCallback;
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +60,14 @@ class WeatherListTile extends StatelessWidget {
         ),
         title: Text(l10n.errorListTileTitle),
         subtitle: Text(l10n.errorListTileSubTitle),
+        trailing: IconButton(
+          icon: const Icon(Icons.refresh),
+          onPressed: onItemReloadCallback,
+          iconSize: 30,
+        ),
       ),
-      none: () => const ListTile(
-        leading: SizedBox(
+      none: () => ListTile(
+        leading: const SizedBox(
           width: 80,
           height: 80,
           child: FittedBox(
@@ -70,6 +77,13 @@ class WeatherListTile extends StatelessWidget {
               color: Colors.blueGrey,
             ),
           ),
+        ),
+        title: Text(l10n.noneListTileTitle),
+        subtitle: Text(l10n.noneListTileSubTitle),
+        trailing: IconButton(
+          icon: const Icon(Icons.refresh),
+          onPressed: onItemReloadCallback,
+          iconSize: 30,
         ),
       ),
     );

@@ -8,5 +8,7 @@
   "errorDialogPositive": "Reload",
   "errorDialogNegative": "Close",
   "errorListTileTitle": "Error",
-  "errorListTileSubTitle": "please retry to load."
+  "errorListTileSubTitle": "please retry to load.",
+  "noneListTileTitle": "Unknown",
+  "noneListTileSubTitle": "no data."
 }

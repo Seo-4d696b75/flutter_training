@@ -21,6 +21,7 @@ class WeatherRepositoryImpl implements WeatherRepository {
 
   @override
   Future<APIException?> updateSelected(int index) async {
+    _weatherList = List.from(_weatherList);
     try {
       var response = await _api.fetch(cities[index]);
       _weatherList[index] = StatefulValue.data(response);

@@ -23,12 +23,16 @@ class WeatherListViewModel extends ChangeNotifier {
     _repository.selectedCityIndex = index;
   }
 
-  Future<void> reload() async {
+  Future<void> reload({int index = -1}) async {
     if (_loading) return;
     _loading = true;
     notifyListeners();
     try {
-      await _repository.updateAll();
+      if (index < 0) {
+        await _repository.updateAll();
+      } else {
+        await _repository.updateSelected(index);
+      }
     } finally {
       _loading = false;
       notifyListeners();
