@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
+import 'package:hello_flutter/ui/weather_list_page.dart';
 import 'package:hello_flutter/ui/weather_page.dart';
 
 class MyApp extends StatelessWidget {
@@ -10,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProviderScope(
-      child: MaterialApp(
+      child: MaterialApp.router(
         title: "droidtraining",
         theme: ThemeData(
           // このアプリのテーマ（アプリ全般に適用させる統一的なUIデザインの設定情報）.
@@ -18,11 +20,44 @@ class MyApp extends StatelessWidget {
         ),
         localizationsDelegates: L10n.localizationsDelegates,
         supportedLocales: L10n.supportedLocales,
-        home: wrapWithLocale(const WeatherPage()),
+        routerDelegate: goRouter.routerDelegate,
+        routeInformationParser: goRouter.routeInformationParser,
       ),
     );
   }
 }
+
+final goRouter = GoRouter(
+  initialLocation: "/",
+  routes: [
+    GoRoute(
+      name: "main",
+      path: "/",
+      pageBuilder: (context, state) => MaterialPage(
+        key: state.pageKey,
+        child: wrapWithLocale(const WeatherPage()),
+      ),
+    ),
+    GoRoute(
+      name: "list",
+      path: "/list",
+      pageBuilder: (context, state) => MaterialPage(
+        key: state.pageKey,
+        child: wrapWithLocale(const WeatherListPage()),
+      ),
+      routes: [
+        GoRoute(
+          name: "select",
+          path: "select",
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: wrapWithLocale(const WeatherPage()),
+          ),
+        ),
+      ],
+    ),
+  ],
+);
 
 final localeProvider = Provider<Locale>((_) => const Locale("ja"));
 

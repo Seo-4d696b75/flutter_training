@@ -3,12 +3,11 @@ import 'dart:math';
 import 'package:api/open_weather_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hello_flutter/app.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
 import 'package:hello_flutter/ui/error_dialog.dart';
 import 'package:hello_flutter/ui/event.dart';
 import 'package:hello_flutter/ui/loading_progress.dart';
-import 'package:hello_flutter/ui/weather_list_page.dart';
 import 'package:hello_flutter/ui/weather_section.dart';
 import 'package:hello_flutter/ui/weather_viewmodel.dart';
 
@@ -122,18 +121,7 @@ class WeatherPage extends ConsumerWidget {
                             child: Center(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  if (Navigator.canPop(context)) {
-                                    Navigator.pop(context);
-                                  } else {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (ctx) => wrapWithLocale(
-                                          const WeatherListPage(),
-                                        ),
-                                      ),
-                                    );
-                                  }
+                                  GoRouter.of(context).go("/list");
                                 },
                                 child: Text(l10n.buttonNext),
                               ),
