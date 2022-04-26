@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:api/model/city.dart';
 import 'package:api/model/current_weather.dart';
+import 'package:api/open_weather_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hello_flutter/data/stateful_value.dart';
 import 'package:hello_flutter/data/weather_api.dart';
 import 'package:hello_flutter/data/weather_api_impl.dart';
 import 'package:hello_flutter/data/weather_repository_impl.dart';
@@ -28,15 +31,23 @@ void main() {
       // target
       final repository = container.read(weatherRepositoryProvider);
       // not init yet
-      expect(repository.weather, isNull);
+      expect(repository.allWeather.length, cities.length);
+      for (var value in repository.allWeather) {
+        expect(value, const StatefulValue<CurrentWeather, APIException>.none());
+      }
       // update
-      await repository.updateWeather();
+      await repository.updateAll();
       // check
-      expect(repository.weather?.weather.main, "Clouds");
-      expect(repository.weather?.main.minTemperature, 15.97);
-      expect(repository.weather?.main.maxTemperature, 18.13);
+      expect(repository.allWeather.length, cities.length);
+      for (var value in repository.allWeather) {
+        // 全都市同じ結果
+        var weather = value.whenOrNull(data: (e) => e);
+        expect(weather?.weather.main, "Clouds");
+        expect(weather?.main.minTemperature, 15.97);
+        expect(weather?.main.maxTemperature, 18.13);
+      }
       // verify
-      verify(api.fetch(any)).called(1);
+      verify(api.fetch(any)).called(cities.length);
     });
   });
 }
