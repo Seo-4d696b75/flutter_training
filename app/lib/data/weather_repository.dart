@@ -7,8 +7,10 @@ abstract class WeatherRepository {
   Future<APIException?> updateSelected(int index);
 
   int selectedCityIndex = 0;
-  
+
   Future<void> updateAll();
 
   List<StatefulValue<CurrentWeather, APIException>> get allWeather;
+
+  CurrentWeather? get selectedCityWeather;
 }

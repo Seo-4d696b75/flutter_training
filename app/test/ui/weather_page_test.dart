@@ -8,8 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hello_flutter/data/weather_api.dart';
 import 'package:hello_flutter/data/weather_api_impl.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
-import 'package:hello_flutter/ui/weather_page.dart';
-import 'package:hello_flutter/ui/weather_section.dart';
+import 'package:hello_flutter/ui/select/weather_page.dart';
+import 'package:hello_flutter/ui/select/weather_section.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 

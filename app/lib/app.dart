@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
-import 'package:hello_flutter/ui/weather_list_page.dart';
-import 'package:hello_flutter/ui/weather_page.dart';
+import 'package:hello_flutter/ui/list/weather_list_page.dart';
+import 'package:hello_flutter/ui/select/weather_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

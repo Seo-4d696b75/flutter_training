@@ -45,6 +45,13 @@ class WeatherRepositoryImpl implements WeatherRepository {
             StatefulValue<CurrentWeather, APIException>.error(error)));
     _weatherList = await Future.wait(loadFutures);
   }
+
+  @override
+  CurrentWeather? get selectedCityWeather => allWeather[selectedCityIndex].when(
+        data: (v) => v,
+        error: (_) => null,
+        none: () => null,
+      );
 }
 
 final weatherRepositoryProvider = Provider<WeatherRepository>(

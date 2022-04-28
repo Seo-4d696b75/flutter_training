@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
-import 'package:hello_flutter/ui/error_dialog.dart';
 import 'package:hello_flutter/ui/event.dart';
 import 'package:hello_flutter/ui/loading_progress.dart';
-import 'package:hello_flutter/ui/weather_section.dart';
-import 'package:hello_flutter/ui/weather_viewmodel.dart';
+import 'package:hello_flutter/ui/select/error_dialog.dart';
+import 'package:hello_flutter/ui/select/weather_section.dart';
+import 'package:hello_flutter/ui/select/weather_viewmodel.dart';
 
 class WeatherPage extends ConsumerWidget {
   const WeatherPage({Key? key}) : super(key: key);
@@ -24,7 +24,7 @@ class WeatherPage extends ConsumerWidget {
         builder: (_) => const ErrorDialog(),
       );
       if (result == ErrorDialogResult.reload) {
-        ref.read(weatherViewModelProvider).reload();
+        ref.read(weatherViewModelProvider.notifier).reload();
       }
     });
     debugPrint("WeatherPage build");
@@ -109,8 +109,9 @@ class WeatherPage extends ConsumerWidget {
                             flex: 1,
                             child: Center(
                               child: ElevatedButton(
-                                onPressed:
-                                    ref.read(weatherViewModelProvider).reload,
+                                onPressed: ref
+                                    .read(weatherViewModelProvider.notifier)
+                                    .reload,
                                 child: Text(l10n.buttonReload),
                                 key: const Key("weather_page_button_reload"),
                               ),
@@ -137,7 +138,7 @@ class WeatherPage extends ConsumerWidget {
           }),
           LoadingProgress(
             loadingProvider:
-                weatherViewModelProvider.select((value) => value.loading),
+                weatherViewModelProvider.select((value) => value.isLoading),
           ),
         ]));
   }

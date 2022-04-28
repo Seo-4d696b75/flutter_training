@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
-import 'package:hello_flutter/ui/weather_list_tile.dart';
-import 'package:hello_flutter/ui/weather_list_viewmodel.dart';
+import 'package:hello_flutter/ui/list/weather_list_tile.dart';
+import 'package:hello_flutter/ui/list/weather_list_viewmodel.dart';
 
 class WeatherListPage extends ConsumerWidget {
   const WeatherListPage({Key? key}) : super(key: key);
