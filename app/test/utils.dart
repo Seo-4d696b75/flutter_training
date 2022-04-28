@@ -14,9 +14,15 @@ class _TextWidgetMatcher extends CustomMatcher {
   @override
   Object? featureValueOf(actual) {
     // inspired by https://stackoverflow.com/questions/54235752/flutter-how-to-get-text-widget-on-widget-test
-    final finder = actual as Finder;
-    final w = finder.evaluate().single.widget;
-    return (w as Text).data;
+    if (actual is Finder) {
+      final widget = actual.evaluate().single.widget;
+      if (widget is Text) {
+        return widget.data;
+      } else {
+        throw ArgumentError("Text widget expected, but actual: $widget");
+      }
+    }
+    throw ArgumentError("Finder expected, but actual: $actual");
   }
 }
 
@@ -41,7 +47,7 @@ class Latch {
 
   /// このlatchが`#complete`で終了されるまで待機するFuture
   ///
-  /// すでに`#complate`で終了済みの場合は即座に完了するFutureを返す
+  /// すでに`#complete`で終了済みの場合は即座に完了するFutureを返す
   Future<void> get wait => _waiting
       ? Future.sync(() async {
           while (_waiting) {
@@ -53,7 +59,7 @@ class Latch {
   /// `#wait`で返したFutureを終了する
   ///
   /// **注意** Futureは即座に終了しない
-  /// 指定した時間間隔でこの終了呼び出しを監視して`#complate`が呼ばれた以降のタイミングでFutureを終了させる
+  /// 指定した時間間隔でこの終了呼び出しを監視して`#complete`が呼ばれた以降のタイミングでFutureを終了させる
   void complete() {
     _waiting = false;
   }
