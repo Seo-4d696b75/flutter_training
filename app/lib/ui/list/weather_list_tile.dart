@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/l10n/l10n.dart';
-import 'package:hello_flutter/ui/list/weather_list_viewmodel.dart';
+import 'package:hello_flutter/ui/list/weather_list_view_state.dart';
 import 'package:hello_flutter/ui/select/weather_section.dart';
 
 class WeatherListTile extends StatelessWidget {

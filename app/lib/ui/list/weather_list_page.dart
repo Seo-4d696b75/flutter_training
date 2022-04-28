@@ -24,7 +24,7 @@ class WeatherListPage extends ConsumerWidget {
         children: [
           Consumer(builder: (ctx, ref, _) {
             final list = ref.watch(
-              weatherListViewModelProvider.select((value) => value.weatherList),
+              weatherListViewModelProvider.select((value) => value.list),
             );
             debugPrint("render: weather list");
             return RefreshIndicator(
@@ -35,16 +35,20 @@ class WeatherListPage extends ConsumerWidget {
                   index: idx,
                   data: list[idx],
                   onSelectedCallback: () {
-                    ref.read(weatherListViewModelProvider).selectCity(idx);
+                    ref
+                        .read(weatherListViewModelProvider.notifier)
+                        .selectCity(idx);
                     GoRouter.of(ctx).go("/list/select");
                   },
                   onItemReloadCallback: () {
-                    ref.read(weatherListViewModelProvider).reload(index: idx);
+                    ref.read(weatherListViewModelProvider.notifier).reload(
+                          index: idx,
+                        );
                   },
                 ),
               ),
               onRefresh: () async {
-                await ref.read(weatherListViewModelProvider).reload();
+                await ref.read(weatherListViewModelProvider.notifier).reload();
               },
               key: indicator,
             );
