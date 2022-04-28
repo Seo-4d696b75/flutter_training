@@ -40,7 +40,7 @@ class WeatherViewModel extends StateNotifier<WeatherViewState> {
         error: Event.create(error),
       );
     } else {
-      _repository.selectedCityIndex = nextIndex;
+      _repository.selectedCityIndex = index;
       state = state.copyWith(
         isLoading: false,
         weather: _repository.selectedCityWeather,
